@@ -8,6 +8,7 @@ export type Color = 'black' | 'white';
 export type Piecetype = 'king' | '+rook' | 'rook' | '+bishop' | 'bishop' | 'gold' | '+silver' | 'silver' | 
                         '+knight' | 'knight' | '+lance' | 'lance' | '+pawn' | 'pawn';
 export type Piecerole = 'king' | 'rook' | 'bishop' | 'gold' | 'silver' | 'knight' | 'lance' | 'pawn';
+/*
 export type Coordinate = '11' | '12' | '13' | '14' | '15' | '16' | '17' | '18' | '19' |
                          '21' | '22' | '23' | '24' | '25' | '26' | '27' | '28' | '29' |
                          '31' | '32' | '33' | '34' | '35' | '36' | '37' | '38' | '39' |
@@ -17,7 +18,6 @@ export type Coordinate = '11' | '12' | '13' | '14' | '15' | '16' | '17' | '18' |
                          '71' | '72' | '73' | '74' | '75' | '76' | '77' | '78' | '79' |
                          '81' | '82' | '83' | '84' | '85' | '86' | '87' | '88' | '89' |
                          '91' | '92' | '93' | '94' | '95' | '96' | '97' | '98' | '99';
-/*
 export type File = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type Rank = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i';
 export type SFEN = string;

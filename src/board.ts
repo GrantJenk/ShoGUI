@@ -2,27 +2,27 @@ import { Piece, Square } from "./types";
 import { isSqEqual } from "./util";
 
 export default class Board {
-    private rows: number;
-    private cols: number;
+    private ranks: number;
+    private files: number;
     private squares: (Piece|undefined)[][];
 
-    constructor(rows=9, cols=9) {
-        this.rows = rows;
-        this.cols = cols;
+    constructor(ranks=9, files=9) {
+        this.ranks = ranks;
+        this.files = files;
         this.squares = [];
-        for (let i = 0; i < cols; i++) {
-            this.squares[i] = [];
-            for (let j = 0; j < rows; j++) {
-                this.squares[i][j] = undefined;
+        for (let f = 0; f < files; f++) {
+            this.squares[f] = [];
+            for (let r = 0; r < ranks; r++) {
+                this.squares[f][r] = undefined;
             }
         }
     }
 
     public ascii(): void {
-        for (let i = 0; i < this.rows; i++) {
+        for (let r = 0; r < this.ranks; r++) {
             let s = '';
-            for (let j = 0; j < this.cols; j++) {
-                let pce = this.squares[j][i];
+            for (let f = 0; f < this.files; f++) {
+                let pce = this.squares[f][r];
                 if (pce) {
                     s += pce.type;
                 } else {
@@ -92,6 +92,6 @@ export default class Board {
     }
 
     public getDimensions() {
-        return { cols: this.cols, rows: this.rows };
+        return { files: this.files, ranks: this.ranks };
     }
 }

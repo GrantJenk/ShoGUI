@@ -286,7 +286,7 @@ export default class GUI {
             file = 8 - file;
             rank = 8 - rank;
         }
-        if (file < 0 || rank < 0 || file > this.board.getDimensions().cols || rank > this.board.getDimensions().rows) {
+        if (file < 0 || rank < 0 || file > this.board.getDimensions().files || rank > this.board.getDimensions().ranks) {
             return undefined;
         }
         return { file, rank };

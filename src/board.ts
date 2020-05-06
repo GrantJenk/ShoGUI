@@ -34,7 +34,6 @@ export default class Board {
     }
 
     public setStartingPosition() {
-        // Place pawns
         for (let f = 0; f < 9; f++) {
             this.squares[f][6] = { type: 'pawn', color: 'black' };
             this.squares[f][2] = { type: 'pawn', color: 'white' };

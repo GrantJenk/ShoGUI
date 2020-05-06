@@ -1,8 +1,8 @@
 {
-  "name": "ShoGUI",
+  "name": "shogui",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/main.js",
+  "main": "./dist/shogui.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

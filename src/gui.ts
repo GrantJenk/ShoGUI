@@ -273,7 +273,7 @@ export default class GUI {
 
     public getSquareAtPos(x: number, y: number): Square|undefined {
         let col = Math.floor( (x - this.boardRect.x)/this.sqSize );
-        let row = Math.floor(y/this.sqSize);
+        let row = Math.floor( (y - this.boardRect.y)/this.sqSize);
         if (this.orientation === 'white') {
             col = 8 - col;
             row = 8 - row;

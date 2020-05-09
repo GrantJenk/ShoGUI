@@ -1,4 +1,4 @@
-import { Rect, Square, Move, Drop } from "./types";
+import { Rect, Square, Move, Drop, Coordinate } from "./types";
 
 /**
  * Determines if something is inside the Rect
@@ -37,7 +37,7 @@ export function isDrop(arg: any): arg is Drop {
  * @param sq Square
  * @example sq(1, 1) --> "8b"
  */
-export function square2ShogiNotation(sq: Square): string {
+export function square2ShogiCoordinate(sq: Square): String {
     let colString = String.fromCharCode( (9 - sq.col) + 48);
     let rowString = String.fromCharCode(sq.row + 97);
     return colString + rowString;
@@ -45,11 +45,11 @@ export function square2ShogiNotation(sq: Square): string {
 
 /**
  * Converts a Shogi notation to its corresponding square
- * @param sNotation square in shogi algebraic notation
+ * @param coord square in shogi algebraic notation
  * @example "8b" --> sq(1, 1)
  */
-export function shogiNotation2Square(sNotation: string): Square {
-    let col = 9 - parseInt(sNotation[0]);
-    let row = sNotation.charCodeAt(0) - 97;
+export function shogiCoordinate2Square(coord: Coordinate): Square {
+    let col = 9 - parseInt(coord[0]);
+    let row = coord.charCodeAt(1) - 97;
     return { col: col, row: row };
 }

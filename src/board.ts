@@ -1,5 +1,5 @@
-import { Piece, Square } from "../types";
-import { squaresEqual } from "../util";
+import { Piece, Square } from "./types";
+import { squaresEqual } from "./util";
 
 export default class Board {
     private rows: number;

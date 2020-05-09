@@ -1,6 +1,6 @@
-import GUI from "./view/gui";
-import Board from "./model/board";
-import Hand from "./model/hand";
+import GUI from "./gui";
+import Board from "./board";
+import Hand from "./hand";
 import { Config, Piece, Square, Color } from "./types";
 import { isPosInsideRect, squaresEqual } from "./util";
 
@@ -25,6 +25,7 @@ export default class ShoGUI {
         this.canvas.width = 1200;
         this.canvas.height = this.canvas.width/2 + 20;
         this.gui = new GUI(this.board, this.handMap, this.canvas);
+        this.gui.flipBoard();
 
         this.canvas.addEventListener('mousedown', function(e) {
             self.onMouseDown(e);

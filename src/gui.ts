@@ -1,7 +1,7 @@
-import { Color, Piece, Piecetype, Rect, Square, Move, Drop } from "../types";
-import Board from "../model/board";
-import Hand from "../model/hand";
-import { squaresEqual, isMove, isDrop } from "../util";
+import { Color, Piece, Piecetype, Rect, Square, Move, Drop } from "./types";
+import Board from "./board";
+import Hand from "./hand";
+import { squaresEqual, isMove, isDrop } from "./util";
 
 export default class GUI {
     private board: Board;
@@ -147,7 +147,7 @@ export default class GUI {
                 label = 8 - i;
             }
             this.ctx.textBaseline = 'middle';
-            this.ctx.fillText( (label+1).toString(), this.boardRect.x - 13, this.sqSize/2+(i*interval) );
+            this.ctx.fillText( String.fromCharCode(label+1+96), this.boardRect.x + this.boardRect.width + 3, this.sqSize/2+(i*interval) );
             this.ctx.textBaseline = 'top';
             this.ctx.fillText( (10 - (label+1)).toString(), this.boardRect.x + this.sqSize/2+(i*interval), this.boardRect.height + 4 );
         }

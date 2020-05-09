@@ -45,8 +45,8 @@ export function square2ShogiNotation(sq: Square): string {
 
 /**
  * Converts a Shogi notation to its corresponding square
- * @param sq Square
- * @example sq(1, 1) --> "8b"
+ * @param sNotation square in shogi algebraic notation
+ * @example "8b" --> sq(1, 1)
  */
 export function shogiNotation2Square(sNotation: string) {
     let col;

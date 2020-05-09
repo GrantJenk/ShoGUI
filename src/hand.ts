@@ -1,4 +1,4 @@
-import { Piecetype } from "../types";
+import { Piecetype } from "./types";
 
 export default class Hand {
     private pieces: Map<Piecetype, number>;

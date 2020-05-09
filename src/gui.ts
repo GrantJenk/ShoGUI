@@ -109,6 +109,8 @@ export default class GUI {
         if (this.draggingPiece) {
             this.drawDraggingPiece();
         }
+
+        //this.drawArrow(this.boardRect.x+(6*this.sqSize), this.boardRect.y+(6*this.sqSize), this.boardRect.x+(3*this.sqSize), this.boardRect.y+(3*this.sqSize));
     }
 
     private drawBoard(): void {
@@ -258,6 +260,21 @@ export default class GUI {
             pos.y,
             this.sqSize,
             this.sqSize);
+    }
+
+    private drawArrow(fromx:number, fromy: number, tox: number, toy: number) {
+        let headLen = 10;
+        let xLen = tox - fromx;
+        let yLen = toy - fromy;
+        let angle = Math.atan2(xLen, yLen);
+        this.ctx.strokeStyle = 'red';
+        this.ctx.beginPath();
+        this.ctx.moveTo(fromx, fromy);
+        this.ctx.lineTo(tox, toy);
+        this.ctx.lineTo(tox - headLen * Math.cos(angle - Math.PI / 6), toy - headLen * Math.sin(angle - Math.PI / 6));
+        this.ctx.moveTo(tox, toy);
+        this.ctx.lineTo(tox - headLen * Math.cos(angle + Math.PI / 6), toy - headLen * Math.sin(angle + Math.PI / 6));
+        this.ctx.stroke();
     }
 
     private drawInverted(image: HTMLImageElement, x: number, y: number, width: number, height: number): void {

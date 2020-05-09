@@ -1,5 +1,5 @@
-import { Piece, Square } from "./types";
-import { isSqEqual } from "./util";
+import { Piece, Square } from "../types";
+import { squaresEqual } from "../util";
 
 export default class Board {
     private ranks: number;
@@ -71,7 +71,7 @@ export default class Board {
      * @returns {boolean} True if successful, false if not
      */
     public movePiece(fromSq: Square, toSq: Square): boolean {
-        if (isSqEqual(fromSq, toSq)) return false;
+        if (squaresEqual(fromSq, toSq)) return false;
 
         if (this.squares[fromSq.file][fromSq.rank]) {
             this.squares[toSq.file][toSq.rank] = this.squares[fromSq.file][fromSq.rank];

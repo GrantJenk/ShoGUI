@@ -1,4 +1,4 @@
-import { Rect, Square, Piecetype, Piecerole, Move, Drop } from "./types";
+import { Rect, Square, Move, Drop } from "./types";
 
 /**
  * Determines if something is inside the Rect
@@ -19,7 +19,7 @@ export function isPosInsideRect(rect: Rect, x: number, y: number) {
  * @param {Square} sq1
  * @param {Square} sq2
  */
-export function isSqEqual(sq1: Square, sq2: Square) {
+export function squaresEqual(sq1: Square, sq2: Square) {
     if (sq1.file === sq2.file && sq1.rank === sq2.rank) return true;
     return false;
 }
@@ -30,31 +30,4 @@ export function isMove(arg: any): arg is Move {
 
 export function isDrop(arg: any): arg is Drop {
     return arg && arg.piece && arg.dest;
-}
-
-export function PiecetypeToRole(piecetype: Piecetype): Piecerole {
-    switch (piecetype) {
-        case 'pawn':
-        case '+pawn':   
-            return 'pawn';
-        case 'lance':
-        case '+lance':
-            return 'lance';
-        case 'knight':
-        case '+knight':
-            return 'knight';
-        case 'silver':
-        case '+silver':
-            return 'silver';
-        case 'gold':
-            return 'gold';
-        case 'bishop':
-        case '+bishop':
-            return 'bishop';
-        case 'rook':
-        case '+rook':
-            return 'rook';
-        case 'king':
-            return 'king';
-    }
 }

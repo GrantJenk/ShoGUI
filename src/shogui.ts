@@ -1,8 +1,8 @@
-import GUI from "./gui";
-import Board from "./board";
-import Hand from "./hand";
+import GUI from "./view/gui";
+import Board from "./model/board";
+import Hand from "./model/hand";
 import { Config, Piece, Square, Color } from "./types";
-import { isPosInsideRect, isSqEqual, PiecetypeToRole } from "./util";
+import { isPosInsideRect, squaresEqual } from "./util";
 
 /**
  * Controller/Manager for the ShoGUI application
@@ -79,7 +79,7 @@ export default class ShoGUI {
         let hand = this.handMap.get(piece.color);
             if (!hand) return;
         this.board.addPiece(piece, sq);
-        hand.removePiece( PiecetypeToRole(piece.type) );
+        hand.removePiece(piece.type);
     }
 
     private selectPiece(sq: Square) {
@@ -124,7 +124,7 @@ export default class ShoGUI {
             let piece = this.board.getPiece(clickedSq);
             let selectedSq = this.gui.getSelectedPieceSq();
             
-            if (piece && (!selectedSq || isSqEqual(selectedSq, clickedSq))) {
+            if (piece && (!selectedSq || squaresEqual(selectedSq, clickedSq))) {
                 this.selectPiece(clickedSq);
                 this.startDraggingPiece(piece, mouseX, mouseY);
             } else {
@@ -173,7 +173,7 @@ export default class ShoGUI {
             let selectedSq = this.gui.getSelectedPieceSq();
             let dragPiece = this.gui.getDraggingPiece();
             if (dragPiece && selectedSq) {
-                if (isSqEqual(selectedSq, sqOver)) {
+                if (squaresEqual(selectedSq, sqOver)) {
                     this.gui.resetDraggingPiece();
                 } else {
                     this.movePiece(selectedSq, sqOver);

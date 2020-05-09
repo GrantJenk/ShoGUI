@@ -1,10 +1,10 @@
-import { Piecerole } from "./types";
+import { Piecetype } from "../types";
 
 export default class Hand {
-    private pieces: Map<Piecerole, number>;
+    private pieces: Map<Piecetype, number>;
 
     constructor() {
-        this.pieces = new Map<Piecerole, number>();
+        this.pieces = new Map<Piecetype, number>();
         this.empty();
     }
 
@@ -18,7 +18,7 @@ export default class Hand {
         this.pieces.set('rook', 0);
     }
 
-    public getNumOfPieces(piece: Piecerole): number|undefined {
+    public getNumOfPieces(piece: Piecetype): number|undefined {
         return this.pieces.get(piece);
     }
 
@@ -28,7 +28,7 @@ export default class Hand {
      * @param num Optional - If not supplied, 1 is the default
      * @returns True if successful, false if not
      */
-    public addPiece(piece: Piecerole, num = 1) {
+    public addPiece(piece: Piecetype, num = 1) {
         let curAmount = this.pieces.get(piece);
         if (curAmount !== undefined) { // Make sure the current amount is not undefined
             this.pieces.set(piece, curAmount + num);
@@ -38,12 +38,12 @@ export default class Hand {
     }
 
     /**
-     * Removes a piece to hand
+     * Removes a piece from hand
      * @param piece 
      * @param num Optional - If not supplied, 1 is the default
      * @returns True if successful, false if not
      */
-    removePiece(piece: Piecerole, num = 1) {
+    removePiece(piece: Piecetype, num = 1) {
         let curAmount = this.pieces.get(piece);
         if (!curAmount || curAmount <= 0) { 
             return false;

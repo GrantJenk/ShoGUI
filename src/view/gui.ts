@@ -1,11 +1,8 @@
-import { Color, Piece, Piecetype, Piecerole, Rect, Square, Move, Drop } from "./types";
-import Board from "./board";
-import Hand from "./hand";
-import { isSqEqual, PiecetypeToRole, isMove, isDrop } from "./util";
+import { Color, Piece, Piecetype, Rect, Square, Move, Drop } from "../types";
+import Board from "../model/board";
+import Hand from "../model/hand";
+import { squaresEqual, isMove, isDrop } from "../util";
 
-/**
- * View for the ShoGUI Application
- */
 export default class GUI {
     private board: Board;
     private handMap: Map<Color, Hand>;
@@ -15,8 +12,8 @@ export default class GUI {
     private pieceImageMap: Map<Piecetype, HTMLImageElement>;
     private sqSize: number;
     private boardRect: Rect;
-    private playerHandRectMap: Map<Piecerole, Rect>;
-    private opponentHandRectMap: Map<Piecerole, Rect>;
+    private playerHandRectMap: Map<Piecetype, Rect>;
+    private opponentHandRectMap: Map<Piecetype, Rect>;
     private selectedPieceSq: Square|undefined;
     private draggingPiece: Piece|undefined;
     private draggingPiecePos: {x: number, y: number};
@@ -33,7 +30,7 @@ export default class GUI {
         if (tmpCtx) { 
             this.ctx = tmpCtx;
         } else {
-            throw new Error("Failed to obtain drawing context");
+            throw new Error('Failed to obtain drawing context');
         }
 
         // Load images
@@ -48,7 +45,7 @@ export default class GUI {
         this.pieceImageMap.set('king', new Image());
 
         for (let [key, value] of this.pieceImageMap) {
-            value.src = "../media/pieces/" + key + ".png";
+            value.src = '../media/pieces/' + key + '.png';
         }
 
         // Setup Rects
@@ -61,11 +58,11 @@ export default class GUI {
         this.opponentHandRectMap = tmpHandRects.opponent;
     }
 
-    private initHandRectMaps(): { player: Map<Piecerole, Rect>, opponent: Map<Piecerole, Rect> } {
+    private initHandRectMaps(): { player: Map<Piecetype, Rect>, opponent: Map<Piecetype, Rect> } {
         let padding = this.boardRect.x + this.boardRect.width;
         let sq = this.sqSize;
-        let pHandMap = new Map<Piecerole, Rect>();
-        let oHandMap = new Map<Piecerole, Rect>();
+        let pHandMap = new Map<Piecetype, Rect>();
+        let oHandMap = new Map<Piecetype, Rect>();
         pHandMap.set('pawn', { x:padding + sq*(3/2), y:sq*6, width:sq, height:sq });
         pHandMap.set('lance', { x:padding + sq/2, y:sq*7, width:sq, height:sq });
         pHandMap.set('knight', { x:padding + sq/2, y:sq*8, width:sq, height:sq });
@@ -165,7 +162,7 @@ export default class GUI {
             }
             let pos = this.getPosAtSquare(sq.file, sq.rank);
             if (this.selectedPieceSq && this.draggingPiece) {
-                if (isSqEqual(this.selectedPieceSq, sq)) {
+                if (squaresEqual(this.selectedPieceSq, sq)) {
                     return false;
                 }
             }
@@ -230,12 +227,11 @@ export default class GUI {
 
     private highlightHandPiece(style: string, piece: Piece) {
         this.ctx.fillStyle = style;
-        let piecerole = PiecetypeToRole(piece.type);
         let pieceRect: Rect|undefined;
         if (piece.color === this.orientation) {
-            pieceRect = this.playerHandRectMap.get(piecerole);
+            pieceRect = this.playerHandRectMap.get(piece.type);
         } else {
-            pieceRect = this.opponentHandRectMap.get(piecerole);
+            pieceRect = this.opponentHandRectMap.get(piece.type);
         }
         if (pieceRect) {
             this.ctx.fillRect(pieceRect.x, pieceRect.y, pieceRect.width, pieceRect.height);
@@ -244,7 +240,7 @@ export default class GUI {
 
     private highlightLastMove() {
         if (this.lastMove) {
-            let style = "#9aa6b1";
+            let style = '#9aa6b1';
             if ( isMove(this.lastMove) ) {
                 this.highlightSquare(style, this.lastMove.src);
             } else if ( isDrop(this.lastMove) ){
@@ -257,7 +253,7 @@ export default class GUI {
     public highlightSquare(style: string, sq: Square) {
         let file = sq.file;
         let rank = sq.rank;
-        if (this.orientation === "white") {
+        if (this.orientation === 'white') {
             file = 8 - file;
             rank = 8 - rank;
         }
@@ -282,7 +278,7 @@ export default class GUI {
     public getSquareAtPos(x: number, y: number): Square|undefined {
         let file = Math.floor( (x - this.boardRect.x)/this.sqSize );
         let rank = Math.floor(y/this.sqSize);
-        if (this.orientation === "white") {
+        if (this.orientation === 'white') {
             file = 8 - file;
             rank = 8 - rank;
         }
@@ -293,7 +289,7 @@ export default class GUI {
     }
 
     public getPosAtSquare(file: number, rank: number): {x: number, y: number} {
-        if (this.orientation === "white") {
+        if (this.orientation === 'white') {
             file = 8 - file;
             rank = 8 - rank;
         }

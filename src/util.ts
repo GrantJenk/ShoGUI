@@ -48,8 +48,8 @@ export function square2ShogiNotation(sq: Square): string {
  * @param sNotation square in shogi algebraic notation
  * @example "8b" --> sq(1, 1)
  */
-export function shogiNotation2Square(sNotation: string) {
-    let col;
-    let row;
-    // TODO: Finish this
+export function shogiNotation2Square(sNotation: string): Square {
+    let col = 9 - parseInt(sNotation[0]);
+    let row = sNotation.charCodeAt(0) - 97;
+    return { col: col, row: row };
 }

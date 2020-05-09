@@ -1,4 +1,4 @@
-import { Color, Piece, Piecetype, Rect, Square, Move, Drop } from "./types";
+import { Color, Piece, Piecetype, Rect, Square, Move, Drop, SquareArrow, HandArrow } from "./types";
 import Board from "./board";
 import Hand from "./hand";
 import { squaresEqual, isMove, isDrop } from "./util";
@@ -17,6 +17,7 @@ export default class GUI {
     private selectedPieceSq: Square|undefined;
     private draggingPiece: Piece|undefined;
     private draggingPiecePos: {x: number, y: number};
+    private arrowList: (SquareArrow|HandArrow)[];
     private lastMove: Move|Drop|undefined;
 
     constructor(board: Board, playerHands: Map<Color, Hand>, canvas: HTMLCanvasElement) {
@@ -24,6 +25,7 @@ export default class GUI {
         this.board = board;
         this.orientation = 'black';
         this.draggingPiecePos = {x:-1, y:-1};
+        this.arrowList = [];
 
         this.canvas = canvas;
         let tmpCtx = this.canvas.getContext('2d');
@@ -85,6 +87,14 @@ export default class GUI {
         this.orientation = this.orientation === 'black' ? 'white' : 'black';
     }
 
+    public addArrow(arrow: SquareArrow|HandArrow): void {
+        this.arrowList.push(arrow);
+    }
+
+    public removeArrow() {
+
+    }
+
     public draw(): void {
         this.ctx.fillStyle = 'slategrey';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -110,7 +120,9 @@ export default class GUI {
             this.drawDraggingPiece();
         }
 
-        //this.drawArrow(this.boardRect.x+(6*this.sqSize), this.boardRect.y+(6*this.sqSize), this.boardRect.x+(3*this.sqSize), this.boardRect.y+(3*this.sqSize));
+        let p = this.square2Pos(0, 4);
+        let t = this.square2Pos(0, 0);
+        this.drawArrow(t.centerX, t.centerY, p.centerX, p.centerY);
     }
 
     private drawBoard(): void {
@@ -162,7 +174,7 @@ export default class GUI {
             if (!pieceImg) {
                 throw new Error("Failed to load piece image: " + piece.type);
             }
-            let pos = this.getPosAtSquare(sq.col, sq.row);
+            let pos = this.square2Pos(sq.col, sq.row);
             if (this.selectedPieceSq && this.draggingPiece) {
                 if (squaresEqual(this.selectedPieceSq, sq)) {
                     return false;
@@ -253,7 +265,7 @@ export default class GUI {
     }
 
     public highlightSquare(style: string, sq: Square) {
-        let pos = this.getPosAtSquare(sq.col, sq.row);
+        let pos = this.square2Pos(sq.col, sq.row);
 
         this.ctx.fillStyle = style;
         this.ctx.fillRect(pos.x, 
@@ -263,18 +275,45 @@ export default class GUI {
     }
 
     private drawArrow(fromx:number, fromy: number, tox: number, toy: number) {
-        let headLen = 10;
-        let xLen = tox - fromx;
-        let yLen = toy - fromy;
-        let angle = Math.atan2(xLen, yLen);
-        this.ctx.strokeStyle = 'red';
-        this.ctx.beginPath();
-        this.ctx.moveTo(fromx, fromy);
-        this.ctx.lineTo(tox, toy);
-        this.ctx.lineTo(tox - headLen * Math.cos(angle - Math.PI / 6), toy - headLen * Math.sin(angle - Math.PI / 6));
-        this.ctx.moveTo(tox, toy);
-        this.ctx.lineTo(tox - headLen * Math.cos(angle + Math.PI / 6), toy - headLen * Math.sin(angle + Math.PI / 6));
-        this.ctx.stroke();
+       this.ctx.save();
+
+       this.ctx.globalAlpha = 0.5;
+       let angle = Math.atan2(toy - fromy, tox - fromx);
+       let radius = 30;
+       let x = tox - radius * Math.cos(angle);
+       let y = toy - radius * Math.sin(angle);
+
+       this.ctx.lineWidth = 2*radius/5;
+       this.ctx.fillStyle = 'red';
+       this.ctx.strokeStyle = 'red';
+
+       // Draw line
+       this.ctx.beginPath();
+       this.ctx.moveTo(fromx, fromy);
+       this.ctx.lineTo(x, y);
+       this.ctx.stroke();
+       this.ctx.closePath();
+
+       // Draw arrow head
+       this.ctx.beginPath();
+
+       let xcenter = (tox + x)/2;
+       let ycenter = (toy + y)/2;
+
+       this.ctx.moveTo(tox, toy);
+       angle += 2*Math.PI/3;
+       x = radius * Math.cos(angle) + xcenter;
+       y = radius * Math.sin(angle) + ycenter;
+       this.ctx.lineTo(x, y);
+       angle += 2*Math.PI/3;
+       x = radius * Math.cos(angle) + xcenter;
+       y = radius * Math.sin(angle) + ycenter;
+       this.ctx.lineTo(x, y);
+
+       this.ctx.closePath();
+       this.ctx.fill();
+
+       this.ctx.restore();
     }
 
     private drawInverted(image: HTMLImageElement, x: number, y: number, width: number, height: number): void {
@@ -288,7 +327,7 @@ export default class GUI {
         this.ctx.restore();
     }
 
-    public getSquareAtPos(x: number, y: number): Square|undefined {
+    public pos2Square(x: number, y: number): Square|undefined {
         let col = Math.floor( (x - this.boardRect.x)/this.sqSize );
         let row = Math.floor( (y - this.boardRect.y)/this.sqSize);
         if (this.orientation === 'white') {
@@ -301,14 +340,16 @@ export default class GUI {
         return { col, row };
     }
 
-    public getPosAtSquare(col: number, row: number): {x: number, y: number} {
+    public square2Pos(col: number, row: number) {
         if (this.orientation === 'white') {
             col = 8 - col;
             row = 8 - row;
         }
         let x = this.boardRect.x + (col * this.sqSize);
         let y = this.boardRect.y + row * this.sqSize;
-        return { x, y };
+        let centerX = x + (this.sqSize/2);
+        let centerY = y + (this.sqSize/2)
+        return { x, y, centerX, centerY };
     }
 
     public getSelectedPiece(): Piece|undefined {

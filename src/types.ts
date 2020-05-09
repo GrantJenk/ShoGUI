@@ -43,3 +43,14 @@ export interface Rect {
     width: number,
     height: number
 }
+export interface SquareArrow {
+    style: string,
+    fromSq: Square,
+    toSq: Square
+}
+export interface HandArrow {
+    style: string,
+    piece: Piecetype,
+    color: Color,
+    toSq: Square
+}

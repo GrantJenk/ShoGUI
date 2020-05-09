@@ -59,6 +59,10 @@ export default class ShoGUI {
         //this.gui.highlightSquare("green", {file: 5, rank:5});
     }
 
+    public addArrow(fromSq: Square, toSq: Square) {
+        
+    }
+
     private movePiece(srcSq: Square, destSq: Square) {
         let success = true;
 
@@ -116,7 +120,7 @@ export default class ShoGUI {
         let mouseY = event.clientY - rect.top;
 
         if (isPosInsideRect(this.gui.getBoardRect(), mouseX, mouseY)) {
-            let clickedSq: Square|undefined = this.gui.getSquareAtPos(mouseX, mouseY);
+            let clickedSq: Square|undefined = this.gui.pos2Square(mouseX, mouseY);
                 if (!clickedSq) return;
             let piece = this.board.getPiece(clickedSq);
             let selectedSq = this.gui.getSelectedPieceSq();
@@ -165,7 +169,7 @@ export default class ShoGUI {
         let mouseY = event.clientY - rect.top;
 
         if (isPosInsideRect(this.gui.getBoardRect(), mouseX, mouseY)) {
-            let sqOver = this.gui.getSquareAtPos(mouseX, mouseY);
+            let sqOver = this.gui.pos2Square(mouseX, mouseY);
                 if (!sqOver) return;
             let selectedSq = this.gui.getSelectedPieceSq();
             let dragPiece = this.gui.getDraggingPiece();

@@ -4,9 +4,6 @@ import Hand from "./model/hand";
 import { Config, Piece, Square, Color } from "./types";
 import { isPosInsideRect, squaresEqual } from "./util";
 
-/**
- * Controller/Manager for the ShoGUI application
- */
 export default class ShoGUI {
     private config: Config;
     private board: Board;
@@ -129,7 +126,7 @@ export default class ShoGUI {
                 this.startDraggingPiece(piece, mouseX, mouseY);
             } else {
                 if (selectedSq) {
-                    if (selectedSq.file !== clickedSq.file || selectedSq.rank !== clickedSq.rank) {
+                    if (!squaresEqual(selectedSq, clickedSq)) {
                         this.movePiece(selectedSq, clickedSq);
                         this.deselectPiece();
                     }

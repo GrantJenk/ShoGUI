@@ -20,7 +20,7 @@ export function isPosInsideRect(rect: Rect, x: number, y: number) {
  * @param {Square} sq2
  */
 export function squaresEqual(sq1: Square, sq2: Square) {
-    if (sq1.file === sq2.file && sq1.rank === sq2.rank) return true;
+    if (sq1.col === sq2.col && sq1.row === sq2.row) return true;
     return false;
 }
 
@@ -30,4 +30,26 @@ export function isMove(arg: any): arg is Move {
 
 export function isDrop(arg: any): arg is Drop {
     return arg && arg.piece && arg.dest;
+}
+
+/**
+ * Converts a square to its corresponding Shogi notation
+ * @param sq Square
+ * @example sq(1, 1) --> "8b"
+ */
+export function square2ShogiNotation(sq: Square): string {
+    let colString = String.fromCharCode( (9 - sq.col) + 48);
+    let rowString = String.fromCharCode(sq.row + 97);
+    return colString + rowString;
+}
+
+/**
+ * Converts a Shogi notation to its corresponding square
+ * @param sq Square
+ * @example sq(1, 1) --> "8b"
+ */
+export function shogiNotation2Square(sNotation: string) {
+    let col;
+    let row;
+    // TODO: Finish this
 }

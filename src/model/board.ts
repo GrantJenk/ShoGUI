@@ -2,26 +2,26 @@ import { Piece, Square } from "../types";
 import { squaresEqual } from "../util";
 
 export default class Board {
-    private ranks: number;
-    private files: number;
+    private rows: number;
+    private cols: number;
     private squares: (Piece|undefined)[][];
 
-    constructor(ranks=9, files=9) {
-        this.ranks = ranks;
-        this.files = files;
+    constructor(rows=9, cols=9) {
+        this.rows = rows;
+        this.cols = cols;
         this.squares = [];
-        for (let f = 0; f < files; f++) {
+        for (let f = 0; f < cols; f++) {
             this.squares[f] = [];
-            for (let r = 0; r < ranks; r++) {
+            for (let r = 0; r < rows; r++) {
                 this.squares[f][r] = undefined;
             }
         }
     }
 
     public ascii(): void {
-        for (let r = 0; r < this.ranks; r++) {
+        for (let r = 0; r < this.rows; r++) {
             let s = '';
-            for (let f = 0; f < this.files; f++) {
+            for (let f = 0; f < this.cols; f++) {
                 let pce = this.squares[f][r];
                 if (pce) {
                     s += pce.type;
@@ -73,9 +73,9 @@ export default class Board {
     public movePiece(fromSq: Square, toSq: Square): boolean {
         if (squaresEqual(fromSq, toSq)) return false;
 
-        if (this.squares[fromSq.file][fromSq.rank]) {
-            this.squares[toSq.file][toSq.rank] = this.squares[fromSq.file][fromSq.rank];
-            this.squares[fromSq.file][fromSq.rank] = undefined;
+        if (this.squares[fromSq.col][fromSq.row]) {
+            this.squares[toSq.col][toSq.row] = this.squares[fromSq.col][fromSq.row];
+            this.squares[fromSq.col][fromSq.row] = undefined;
             return true;
         }
 
@@ -83,14 +83,14 @@ export default class Board {
     }
 
     public getPiece(sq: Square): Piece|undefined {
-        return this.squares[sq.file][sq.rank];
+        return this.squares[sq.col][sq.row];
     }
 
     public addPiece(piece: Piece, sq: Square): void {
-        this.squares[sq.file][sq.rank] = piece;
+        this.squares[sq.col][sq.row] = piece;
     }
 
     public getDimensions() {
-        return { files: this.files, ranks: this.ranks };
+        return { cols: this.cols, rows: this.rows };
     }
 }

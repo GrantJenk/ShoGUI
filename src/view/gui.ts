@@ -99,7 +99,7 @@ export default class GUI {
 
         for (let f = 0; f < 9; f++) {
             for (let r = 0; r < 9; r++) {
-                this.drawPiece( {file:f, rank:r} );
+                this.drawPiece( {col:f, row:r} );
             }
         }
 
@@ -160,7 +160,7 @@ export default class GUI {
             if (!pieceImg) {
                 throw new Error("Failed to load piece image: " + piece.type);
             }
-            let pos = this.getPosAtSquare(sq.file, sq.rank);
+            let pos = this.getPosAtSquare(sq.col, sq.row);
             if (this.selectedPieceSq && this.draggingPiece) {
                 if (squaresEqual(this.selectedPieceSq, sq)) {
                     return false;
@@ -251,15 +251,15 @@ export default class GUI {
     }
 
     public highlightSquare(style: string, sq: Square) {
-        let file = sq.file;
-        let rank = sq.rank;
+        let col = sq.col;
+        let row = sq.row;
         if (this.orientation === 'white') {
-            file = 8 - file;
-            rank = 8 - rank;
+            col = 8 - col;
+            row = 8 - row;
         }
         this.ctx.fillStyle = style;
-        this.ctx.fillRect(this.boardRect.x + file*this.sqSize, 
-            rank*this.sqSize,
+        this.ctx.fillRect(this.boardRect.x + col*this.sqSize, 
+            row*this.sqSize,
             this.sqSize,
             this.sqSize);
     }
@@ -276,25 +276,25 @@ export default class GUI {
     }
 
     public getSquareAtPos(x: number, y: number): Square|undefined {
-        let file = Math.floor( (x - this.boardRect.x)/this.sqSize );
-        let rank = Math.floor(y/this.sqSize);
+        let col = Math.floor( (x - this.boardRect.x)/this.sqSize );
+        let row = Math.floor(y/this.sqSize);
         if (this.orientation === 'white') {
-            file = 8 - file;
-            rank = 8 - rank;
+            col = 8 - col;
+            row = 8 - row;
         }
-        if (file < 0 || rank < 0 || file > this.board.getDimensions().files || rank > this.board.getDimensions().ranks) {
+        if (col < 0 || row < 0 || col > this.board.getDimensions().cols || row > this.board.getDimensions().rows) {
             return undefined;
         }
-        return { file, rank };
+        return { col, row };
     }
 
-    public getPosAtSquare(file: number, rank: number): {x: number, y: number} {
+    public getPosAtSquare(col: number, row: number): {x: number, y: number} {
         if (this.orientation === 'white') {
-            file = 8 - file;
-            rank = 8 - rank;
+            col = 8 - col;
+            row = 8 - row;
         }
-        let x = this.boardRect.x + (file * this.sqSize);
-        let y = rank * this.sqSize;
+        let x = this.boardRect.x + (col * this.sqSize);
+        let y = row * this.sqSize;
         return { x, y };
     }
 
@@ -335,7 +335,7 @@ export default class GUI {
     public getDraggingPiece() {
         return this.draggingPiece;
     }
-    
+
     public getBoardRect() {
         return this.boardRect;
     }

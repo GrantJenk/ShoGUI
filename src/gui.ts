@@ -49,7 +49,7 @@ export default class GUI {
         }
 
         // Setup Rects
-        this.boardRect = { x: this.canvas.width/4, y: 0, width: this.canvas.width/2, height: this.canvas.width/2 };
+        this.boardRect = { x: this.canvas.width/4, y: 15, width: this.canvas.width/2, height: this.canvas.width/2 };
         this.sqSize = this.boardRect.width/9;
 
         // Hand Rects
@@ -147,9 +147,9 @@ export default class GUI {
                 label = 8 - i;
             }
             this.ctx.textBaseline = 'middle';
-            this.ctx.fillText( String.fromCharCode(label+1+96), this.boardRect.x + this.boardRect.width + 3, this.sqSize/2+(i*interval) );
+            this.ctx.fillText( String.fromCharCode(label+1+96), this.boardRect.x + this.boardRect.width + 3, this.boardRect.y + this.sqSize/2+(i*interval) );
             this.ctx.textBaseline = 'top';
-            this.ctx.fillText( (10 - (label+1)).toString(), this.boardRect.x + this.sqSize/2+(i*interval), this.boardRect.height + 4 );
+            this.ctx.fillText( (10 - (label+1)).toString(), this.boardRect.x + (this.sqSize/2)+(i*interval), 0);
         }
     }
 
@@ -251,15 +251,11 @@ export default class GUI {
     }
 
     public highlightSquare(style: string, sq: Square) {
-        let col = sq.col;
-        let row = sq.row;
-        if (this.orientation === 'white') {
-            col = 8 - col;
-            row = 8 - row;
-        }
+        let pos = this.getPosAtSquare(sq.col, sq.row);
+
         this.ctx.fillStyle = style;
-        this.ctx.fillRect(this.boardRect.x + col*this.sqSize, 
-            row*this.sqSize,
+        this.ctx.fillRect(pos.x, 
+            pos.y,
             this.sqSize,
             this.sqSize);
     }
@@ -294,7 +290,7 @@ export default class GUI {
             row = 8 - row;
         }
         let x = this.boardRect.x + (col * this.sqSize);
-        let y = row * this.sqSize;
+        let y = this.boardRect.y + row * this.sqSize;
         return { x, y };
     }
 

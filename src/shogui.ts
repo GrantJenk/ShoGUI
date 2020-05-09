@@ -25,7 +25,6 @@ export default class ShoGUI {
         this.canvas.width = 1200;
         this.canvas.height = this.canvas.width/2 + 20;
         this.gui = new GUI(this.board, this.handMap, this.canvas);
-        this.gui.flipBoard();
 
         this.canvas.addEventListener('mousedown', function(e) {
             self.onMouseDown(e);

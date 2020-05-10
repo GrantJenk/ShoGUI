@@ -22,7 +22,7 @@ export default class ShoGUI {
         this.board.setStartingPosition();
 
         this.canvas = document.createElement('canvas');
-        this.canvas.width = 1200;
+        this.canvas.width = 1350;
         this.canvas.height = this.canvas.width/2 + 20;
         this.gui = new GUI(this.board, this.handMap, this.canvas);
 
@@ -60,7 +60,7 @@ export default class ShoGUI {
     }
 
     public addArrow(fromSq: Square, toSq: Square) {
-        
+
     }
 
     private movePiece(srcSq: Square, destSq: Square) {

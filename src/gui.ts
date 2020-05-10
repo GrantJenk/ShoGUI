@@ -9,6 +9,8 @@ export default class GUI {
     private orientation: Color;
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
+    private arrowCanvas: HTMLCanvasElement;
+    private arrowCtx: CanvasRenderingContext2D;
     private pieceImageMap: Map<Piecetype, HTMLImageElement>;
     private sqSize: number;
     private boardRect: Rect;
@@ -33,6 +35,15 @@ export default class GUI {
             this.ctx = tmpCtx;
         } else {
             throw new Error('Failed to obtain drawing context');
+        }
+        this.arrowCanvas = document.createElement('canvas');
+        this.arrowCanvas.height = this.canvas.height;
+        this.arrowCanvas.width = this.canvas.width;
+        tmpCtx = this.arrowCanvas.getContext('2d');
+        if (tmpCtx) { 
+            this.arrowCtx = tmpCtx;
+        } else {
+            throw new Error('Failed to obtain arrow drawing context');
         }
 
         // Load images
@@ -120,14 +131,17 @@ export default class GUI {
             this.drawDraggingPiece();
         }
 
-        let p = this.square2Pos(0, 4);
+        let p = this.square2Pos(3, 7);
         let t = this.square2Pos(0, 0);
-        this.drawArrow(t.centerX, t.centerY, p.centerX, p.centerY);
+        this.drawArrow('blue', t.centerX, t.centerY, p.centerX, p.centerY);
+        this.ctx.globalAlpha = 0.6;
+        this.ctx.drawImage(this.arrowCanvas, 0, 0);
+        this.ctx.globalAlpha = 1.0;
     }
 
     private drawBoard(): void {
         this.ctx.strokeStyle = 'silver';
-        this.ctx.lineWidth = 2;
+        this.ctx.lineWidth = 1;
 
         for (let f = 0; f <= 9; f++) {
             let i = f*this.sqSize + this.boardRect.x;
@@ -274,46 +288,42 @@ export default class GUI {
             this.sqSize);
     }
 
-    private drawArrow(fromx:number, fromy: number, tox: number, toy: number) {
-       this.ctx.save();
-
-       this.ctx.globalAlpha = 0.5;
-       let angle = Math.atan2(toy - fromy, tox - fromx);
-       let radius = 30;
-       let x = tox - radius * Math.cos(angle);
-       let y = toy - radius * Math.sin(angle);
-
-       this.ctx.lineWidth = 2*radius/5;
-       this.ctx.fillStyle = 'red';
-       this.ctx.strokeStyle = 'red';
-
-       // Draw line
-       this.ctx.beginPath();
-       this.ctx.moveTo(fromx, fromy);
-       this.ctx.lineTo(x, y);
-       this.ctx.stroke();
-       this.ctx.closePath();
-
-       // Draw arrow head
-       this.ctx.beginPath();
-
-       let xcenter = (tox + x)/2;
-       let ycenter = (toy + y)/2;
-
-       this.ctx.moveTo(tox, toy);
-       angle += 2*Math.PI/3;
-       x = radius * Math.cos(angle) + xcenter;
-       y = radius * Math.sin(angle) + ycenter;
-       this.ctx.lineTo(x, y);
-       angle += 2*Math.PI/3;
-       x = radius * Math.cos(angle) + xcenter;
-       y = radius * Math.sin(angle) + ycenter;
-       this.ctx.lineTo(x, y);
-
-       this.ctx.closePath();
-       this.ctx.fill();
-
-       this.ctx.restore();
+    private drawArrow(style: string, fromx:number, fromy: number, tox: number, toy: number) {
+        let angle = Math.atan2(toy - fromy, tox - fromx);
+        let radius = this.arrowCanvas.width/40;
+        let x = tox - radius * Math.cos(angle);
+        let y = toy - radius * Math.sin(angle);
+ 
+        this.arrowCtx.lineWidth = 2*radius/5;
+        this.arrowCtx.lineCap = 'round';
+        this.arrowCtx.fillStyle = style;
+        this.arrowCtx.strokeStyle = style;
+ 
+        // Draw line
+        this.arrowCtx.beginPath();
+        this.arrowCtx.moveTo(fromx, fromy);
+        this.arrowCtx.lineTo(x, y);
+        this.arrowCtx.stroke();
+        this.arrowCtx.closePath();
+ 
+        // Draw arrow head
+        this.arrowCtx.beginPath();
+ 
+        let xcenter = (tox + x)/2;
+        let ycenter = (toy + y)/2;
+ 
+        this.arrowCtx.moveTo(tox, toy);
+        angle += 2*Math.PI/3;
+        x = radius * Math.cos(angle) + xcenter;
+        y = radius * Math.sin(angle) + ycenter;
+        this.arrowCtx.lineTo(x, y);
+        angle += 2*Math.PI/3;
+        x = radius * Math.cos(angle) + xcenter;
+        y = radius * Math.sin(angle) + ycenter;
+        this.arrowCtx.lineTo(x, y);
+ 
+        this.arrowCtx.closePath();
+        this.arrowCtx.fill();
     }
 
     private drawInverted(image: HTMLImageElement, x: number, y: number, width: number, height: number): void {

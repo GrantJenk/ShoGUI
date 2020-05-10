@@ -34,10 +34,11 @@ export function isDrop(arg: any): arg is Drop {
 
 /**
  * Converts a square to its corresponding Shogi algebraic notation
+ * TODO: Investigate returning Coordinate type rather than string
  * @param sq Square
  * @example sq(1, 1) --> "8b"
  */
-export function square2ShogiCoordinate(sq: Square): String {
+export function square2ShogiCoordinate(sq: Square): string {
     let colString = String.fromCharCode( (9 - sq.col) + 48);
     let rowString = String.fromCharCode(sq.row + 97);
     return colString + rowString;

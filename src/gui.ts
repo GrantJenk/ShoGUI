@@ -1,7 +1,7 @@
 import { Color, Piece, Piecetype, Rect, Square, Move, Drop, SquareArrow, HandArrow } from "./types";
 import Board from "./board";
 import Hand from "./hand";
-import { squaresEqual, isMove, isDrop } from "./util";
+import { squaresEqual } from "./util";
 
 export default class GUI {
     private board: Board;
@@ -19,18 +19,16 @@ export default class GUI {
     private selectedPieceSq: Square|undefined;
     private draggingPiece: Piece|undefined;
     private draggingPiecePos: {x: number, y: number};
-    private arrowList: SquareArrow[];
 
     constructor(board: Board, playerHands: Map<Color, Hand>, canvas: HTMLCanvasElement) {
         this.handMap = playerHands;
         this.board = board;
         this.orientation = 'black';
         this.draggingPiecePos = {x:-1, y:-1};
-        this.arrowList = [];
 
         this.canvas = canvas;
         let tmpCtx = this.canvas.getContext('2d');
-        if (tmpCtx) { 
+        if (tmpCtx) {
             this.ctx = tmpCtx;
         } else {
             throw new Error('Failed to obtain drawing context');
@@ -38,9 +36,10 @@ export default class GUI {
         this.arrowCanvas = document.createElement('canvas');
         this.arrowCanvas.height = this.canvas.height;
         this.arrowCanvas.width = this.canvas.width;
-        tmpCtx = this.arrowCanvas.getContext('2d');
-        if (tmpCtx) { 
-            this.arrowCtx = tmpCtx;
+        let tmpaCtx = this.arrowCanvas.getContext('2d');
+        if (tmpaCtx) { 
+            this.arrowCtx = tmpaCtx;
+            this.arrowCtx.lineCap = 'round';
         } else {
             throw new Error('Failed to obtain arrow drawing context');
         }
@@ -95,14 +94,6 @@ export default class GUI {
 
     public flipBoard(): void {
         this.orientation = this.orientation === 'black' ? 'white' : 'black';
-    }
-
-    public addArrow(arrow: SquareArrow): void {
-        this.arrowList.push(arrow);
-    }
-
-    public clearArrows(): void {
-        this.arrowList = [];
     }
 /*
     public drawGame(curArrow?: SquareArrow): void {
@@ -191,24 +182,28 @@ export default class GUI {
         }
     }
 
-    public drawPiece(sq: Square): boolean {
+    public drawPiece(piece: Piece, x: number, y: number) {
+        let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(piece.type);
+        if (!pieceImg) {
+            throw new Error("Failed to load piece image: " + piece.type);
+        }
+        if (piece.color === this.orientation) {
+            this.ctx.drawImage(pieceImg, x, y, this.sqSize, this.sqSize);
+        } else {
+            this.drawInverted(pieceImg, x, y, this.sqSize, this.sqSize);
+        }
+    }
+
+    public drawPieceAtSquare(sq: Square): boolean {
         let piece: Piece|undefined = this.board.getPiece(sq);
         if (piece) {
-            let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(piece.type);
-            if (!pieceImg) {
-                throw new Error("Failed to load piece image: " + piece.type);
-            }
             let pos = this.square2Pos(sq.col, sq.row);
             if (this.selectedPieceSq && this.draggingPiece) {
                 if (squaresEqual(this.selectedPieceSq, sq)) {
                     return false;
                 }
             }
-            if (piece.color === this.orientation) {
-                this.ctx.drawImage(pieceImg, pos.x, pos.y, this.sqSize, this.sqSize);
-            } else {
-                this.drawInverted(pieceImg, pos.x, pos.y, this.sqSize, this.sqSize);
-            }
+            this.drawPiece(piece, pos.x, pos.y);
         }
         return true;
     }
@@ -280,7 +275,6 @@ export default class GUI {
         let y = toy - radius * Math.sin(angle);
  
         this.arrowCtx.lineWidth = 2*radius/5;
-        this.arrowCtx.lineCap = 'round';
         this.arrowCtx.fillStyle = style;
         this.arrowCtx.strokeStyle = style;
  
@@ -368,27 +362,12 @@ export default class GUI {
         this.selectedPieceSq = undefined;
     }
 
-    public setDraggingPiece(piece: Piece, x?: number, y?: number) {
-        this.draggingPiece = piece;
-        if (x && y) {
-            this.draggingPiecePos = {x: x, y: y};
-        }
-    }
-
-    public resetDraggingPiece() {
-        this.draggingPiece = undefined;
-    }
-
-    public setDraggingPiecePos(x: number, y: number) {
-        this.draggingPiecePos = {x: x, y: y};
-    }
-    
-    public getDraggingPiece() {
-        return this.draggingPiece;
-    }
-
     public getBoardRect() {
         return this.boardRect;
+    }
+
+    public getSqSize() {
+        return this.sqSize;
     }
 
     public getPlayerHandRectMap() {

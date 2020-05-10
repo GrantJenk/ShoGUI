@@ -104,11 +104,9 @@ export default class GUI {
     public clearArrows(): void {
         this.arrowList = [];
     }
-
+/*
     public drawGame(curArrow?: SquareArrow): void {
-        this.ctx.fillStyle = 'slategrey';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.arrowCtx.clearRect(0, 0, this.arrowCanvas.width, this.arrowCanvas.height);
+        this.clearCanvas();
 
         if (this.selectedPieceSq) {
             this.highlightSquare('mintcream', this.selectedPieceSq);
@@ -144,8 +142,14 @@ export default class GUI {
         this.ctx.drawImage(this.arrowCanvas, 0, 0);
         this.ctx.globalAlpha = 1.0;
     }
+*/
+    public clearCanvas() {
+        this.ctx.fillStyle = 'slategrey';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.arrowCtx.clearRect(0, 0, this.arrowCanvas.width, this.arrowCanvas.height);
+    }
 
-    private drawBoard(): void {
+    public drawBoard(): void {
         this.ctx.strokeStyle = 'silver';
         this.ctx.lineWidth = 1;
 
@@ -170,7 +174,7 @@ export default class GUI {
         }
     }
 
-    private drawFileRankLabels(): void {
+    public drawFileRankLabels(): void {
         let interval = this.sqSize;
         this.ctx.font = '15px arial'
         this.ctx.fillStyle = 'white';
@@ -187,7 +191,7 @@ export default class GUI {
         }
     }
 
-    private drawPiece(sq: Square): boolean {
+    public drawPiece(sq: Square): boolean {
         let piece: Piece|undefined = this.board.getPiece(sq);
         if (piece) {
             let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(piece.type);
@@ -209,7 +213,7 @@ export default class GUI {
         return true;
     }
 
-    private drawDraggingPiece() {
+    public drawDraggingPiece() {
         if (this.draggingPiece) {
             let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(this.draggingPiece.type);
             if (!pieceImg) {
@@ -225,7 +229,7 @@ export default class GUI {
         }
     }
 
-    private drawHand(color: Color) {
+    public drawHand(color: Color) {
         let hand = this.handMap.get(color);
             if (!hand) return;
         this.ctx.textBaseline = 'bottom';
@@ -269,7 +273,7 @@ export default class GUI {
             this.sqSize);
     }
 
-    private drawArrow(style: string, fromx:number, fromy: number, tox: number, toy: number) {
+    public drawArrow(style: string, fromx:number, fromy: number, tox: number, toy: number) {
         let angle = Math.atan2(toy - fromy, tox - fromx);
         let radius = this.arrowCanvas.width/40;
         let x = tox - radius * Math.cos(angle);
@@ -307,7 +311,13 @@ export default class GUI {
         this.arrowCtx.fill();
     }
 
-    private drawInverted(image: HTMLImageElement, x: number, y: number, width: number, height: number): void {
+    public drawArrowCanvas(alpha: number) {
+        this.ctx.globalAlpha = alpha;
+        this.ctx.drawImage(this.arrowCanvas, 0, 0);
+        this.ctx.globalAlpha = 1.0;
+    }
+
+    public drawInverted(image: HTMLImageElement, x: number, y: number, width: number, height: number): void {
         this.ctx.save();
 
         this.ctx.translate(x + width/2, y + height/2);

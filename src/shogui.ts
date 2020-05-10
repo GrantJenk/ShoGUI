@@ -11,10 +11,13 @@ export default class ShoGUI {
     private canvas: HTMLCanvasElement;
     private gui: GUI;
     private currentArrow: SquareArrow|undefined;
+    private arrowList: SquareArrow[];
 
     constructor(config: Config) {
         let self = this;
         this.config = config;
+
+        this.arrowList = [];
 
         this.board = new Board();
         this.handMap = new Map<Color, Hand>();
@@ -56,15 +59,45 @@ export default class ShoGUI {
     }
 
     private drawGame() {
-        this.gui.drawGame(this.currentArrow);
+        this.gui.clearCanvas();
+
+        //this.gui.highlightSquare('mintcream', {col: 4, row: 4});
+
+        this.gui.drawBoard();
+        this.gui.drawFileRankLabels();
+
+        for (let f = 0; f < 9; f++) {
+            for (let r = 0; r < 9; r++) {
+                this.gui.drawPiece( {col:f, row:r} );
+            }
+        }
+
+        this.gui.drawHand('black'); 
+        this.gui.drawHand('white');
+
+        // Draw dragging piece here
+
+        if (this.currentArrow) {
+            let toSqPos = this.gui.square2Pos(this.currentArrow.toSq.col, this.currentArrow.toSq.row);
+            let fromSqPos = this.gui.square2Pos(this.currentArrow.fromSq.col, this.currentArrow.fromSq.row);
+            this.gui.drawArrow(this.currentArrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+        }
+
+        for (let arrow of this.arrowList) {
+            let toSqPos = this.gui.square2Pos(arrow.toSq.col, arrow.toSq.row);
+            let fromSqPos = this.gui.square2Pos(arrow.fromSq.col, arrow.fromSq.row);
+            this.gui.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+        }
+
+        this.gui.drawArrowCanvas(0.6);
     }
 
     public addArrow(arrow: SquareArrow) {
-        this.gui.addArrow(arrow);
+        this.arrowList.push(arrow);
     }
 
     public clearArrows() {
-        this.gui.clearArrows();
+        this.arrowList = [];
     }
 
     private movePiece(srcSq: Square, destSq: Square) {
@@ -196,7 +229,7 @@ export default class ShoGUI {
 
         if (event.button === 2) { // Right mouse button
             if (this.currentArrow) {
-                this.gui.addArrow(this.currentArrow);
+                this.arrowList.push(this.currentArrow);
                 this.currentArrow = undefined;
             }
         }

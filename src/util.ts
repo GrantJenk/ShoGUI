@@ -33,7 +33,7 @@ export function isDrop(arg: any): arg is Drop {
 }
 
 /**
- * Converts a square to its corresponding Shogi notation
+ * Converts a square to its corresponding Shogi algebraic notation
  * @param sq Square
  * @example sq(1, 1) --> "8b"
  */
@@ -44,7 +44,7 @@ export function square2ShogiCoordinate(sq: Square): String {
 }
 
 /**
- * Converts a Shogi notation to its corresponding square
+ * Converts a Shogi square in algebraic notation to its corresponding square
  * @param coord square in shogi algebraic notation
  * @example "8b" --> sq(1, 1)
  */

@@ -19,8 +19,7 @@ export default class GUI {
     private selectedPieceSq: Square|undefined;
     private draggingPiece: Piece|undefined;
     private draggingPiecePos: {x: number, y: number};
-    private arrowList: (SquareArrow|HandArrow)[];
-    private lastMove: Move|Drop|undefined;
+    private arrowList: SquareArrow[];
 
     constructor(board: Board, playerHands: Map<Color, Hand>, canvas: HTMLCanvasElement) {
         this.handMap = playerHands;
@@ -98,19 +97,19 @@ export default class GUI {
         this.orientation = this.orientation === 'black' ? 'white' : 'black';
     }
 
-    public addArrow(arrow: SquareArrow|HandArrow): void {
+    public addArrow(arrow: SquareArrow): void {
         this.arrowList.push(arrow);
     }
 
-    public removeArrow() {
-
+    public clearArrows(): void {
+        this.arrowList = [];
     }
 
-    public draw(): void {
+    public drawGame(curArrow?: SquareArrow): void {
         this.ctx.fillStyle = 'slategrey';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.arrowCtx.clearRect(0, 0, this.arrowCanvas.width, this.arrowCanvas.height);
 
-        this.highlightLastMove();
         if (this.selectedPieceSq) {
             this.highlightSquare('mintcream', this.selectedPieceSq);
         }
@@ -131,9 +130,16 @@ export default class GUI {
             this.drawDraggingPiece();
         }
 
-        let p = this.square2Pos(3, 7);
-        let t = this.square2Pos(0, 0);
-        this.drawArrow('blue', t.centerX, t.centerY, p.centerX, p.centerY);
+        for (let arrow of this.arrowList) {
+            let toSqPos = this.square2Pos(arrow.toSq.col, arrow.toSq.row);
+            let fromSqPos = this.square2Pos(arrow.fromSq.col, arrow.fromSq.row);
+            this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+        }
+        if (curArrow) {
+            let toSqPos = this.square2Pos(curArrow.toSq.col, curArrow.toSq.row);
+            let fromSqPos = this.square2Pos(curArrow.fromSq.col, curArrow.fromSq.row);
+            this.drawArrow(curArrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+        }
         this.ctx.globalAlpha = 0.6;
         this.ctx.drawImage(this.arrowCanvas, 0, 0);
         this.ctx.globalAlpha = 1.0;
@@ -253,31 +259,6 @@ export default class GUI {
         this.ctx.globalAlpha = 1;
     }
 
-    private highlightHandPiece(style: string, piece: Piece) {
-        this.ctx.fillStyle = style;
-        let pieceRect: Rect|undefined;
-        if (piece.color === this.orientation) {
-            pieceRect = this.playerHandRectMap.get(piece.type);
-        } else {
-            pieceRect = this.opponentHandRectMap.get(piece.type);
-        }
-        if (pieceRect) {
-            this.ctx.fillRect(pieceRect.x, pieceRect.y, pieceRect.width, pieceRect.height);
-        }
-    }
-
-    private highlightLastMove() {
-        if (this.lastMove) {
-            let style = '#9aa6b1';
-            if ( isMove(this.lastMove) ) {
-                this.highlightSquare(style, this.lastMove.src);
-            } else if ( isDrop(this.lastMove) ){
-                this.highlightHandPiece(style, this.lastMove.piece);
-            }
-            this.highlightSquare(style, this.lastMove.dest);
-        }
-    }
-
     public highlightSquare(style: string, sq: Square) {
         let pos = this.square2Pos(sq.col, sq.row);
 
@@ -344,7 +325,7 @@ export default class GUI {
             col = 8 - col;
             row = 8 - row;
         }
-        if (col < 0 || row < 0 || col > this.board.getDimensions().cols || row > this.board.getDimensions().rows) {
+        if (col < 0 || row < 0 || col > this.board.getDimensions().cols - 1|| row > this.board.getDimensions().rows - 1) {
             return undefined;
         }
         return { col, row };
@@ -391,11 +372,7 @@ export default class GUI {
     public setDraggingPiecePos(x: number, y: number) {
         this.draggingPiecePos = {x: x, y: y};
     }
-
-    public setLastMove(arg: Move|Drop) {
-        this.lastMove = arg;
-    }
-
+    
     public getDraggingPiece() {
         return this.draggingPiece;
     }

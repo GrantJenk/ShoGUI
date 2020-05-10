@@ -1,7 +1,7 @@
 import GUI from "./gui";
 import Board from "./board";
 import Hand from "./hand";
-import { Config, Piece, Square, Color } from "./types";
+import { Config, Piece, Square, Color, SquareArrow } from "./types";
 import { isPosInsideRect, squaresEqual } from "./util";
 
 export default class ShoGUI {
@@ -10,6 +10,7 @@ export default class ShoGUI {
     private handMap: Map<Color, Hand>;
     private canvas: HTMLCanvasElement;
     private gui: GUI;
+    private currentArrow: SquareArrow|undefined;
 
     constructor(config: Config) {
         let self = this;
@@ -55,12 +56,15 @@ export default class ShoGUI {
     }
 
     private drawGame() {
-        this.gui.draw();
-        //this.gui.highlightSquare("green", {file: 5, rank:5});
+        this.gui.drawGame(this.currentArrow);
     }
 
-    public addArrow(fromSq: Square, toSq: Square) {
+    public addArrow(arrow: SquareArrow) {
+        this.gui.addArrow(arrow);
+    }
 
+    public clearArrows() {
+        this.gui.clearArrows();
     }
 
     private movePiece(srcSq: Square, destSq: Square) {
@@ -72,7 +76,7 @@ export default class ShoGUI {
 
         if (success) {
             this.board.movePiece(srcSq, destSq);
-            this.gui.setLastMove( {src: srcSq, dest: destSq} );
+            //this.gui.setLastMove( {src: srcSq, dest: destSq} );
         }
     }
 
@@ -114,6 +118,8 @@ export default class ShoGUI {
         if (event.button !== 0) {
             return;
         }
+
+        this.clearArrows();
 
         let rect = this.canvas.getBoundingClientRect();
         let mouseX = event.clientX - rect.left;
@@ -187,19 +193,43 @@ export default class ShoGUI {
             this.deselectPiece();
         }
         this.gui.resetDraggingPiece();
+
+        if (event.button === 2) { // Right mouse button
+            if (this.currentArrow) {
+                this.gui.addArrow(this.currentArrow);
+                this.currentArrow = undefined;
+            }
+        }
     }
 
     private onMouseMove(event: MouseEvent) {
-        if ( this.gui.getDraggingPiece() ) {
-            let rect = this.canvas.getBoundingClientRect();
-            let mouseX = event.clientX - rect.left;
-            let mouseY = event.clientY - rect.top;
+        let rect = this.canvas.getBoundingClientRect();
+        let mouseX = event.clientX - rect.left;
+        let mouseY = event.clientY - rect.top;
+        let hoverSq = this.gui.pos2Square(mouseX, mouseY);
 
+        if ( this.gui.getDraggingPiece() ) {
             this.gui.setDraggingPiecePos(mouseX, mouseY);
+        }
+
+        if (this.currentArrow) {
+            if (hoverSq) {
+                this.currentArrow.toSq = hoverSq;
+            }
         }
     }
 
     private onRightClick(event: MouseEvent) {
+        let rect = this.canvas.getBoundingClientRect();
+        let mouseX = event.clientX - rect.left;
+        let mouseY = event.clientY - rect.top;
+        let clickedSq = this.gui.pos2Square(mouseX, mouseY);
+        let dragPiece = this.gui.getDraggingPiece();
+
+        if (clickedSq && !dragPiece) {
+            this.currentArrow = { style: 'blue', fromSq: clickedSq, toSq: clickedSq };
+        }
+
         this.gui.resetDraggingPiece();
         this.deselectPiece();
     }

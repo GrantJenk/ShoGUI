@@ -19,6 +19,7 @@ export type Coordinate = '9a' | '8a' | '7a' | '6a' | '5a' | '4a' | '3a' | '2a' |
 
 export type Rank = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i';
 export type File = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export type HighlightType = 'fill' | 'outline' | 'circle' | 'hidden'
 
 export interface Square { // Note: this does not map to an actual shogi square coordinate, hence the "col" and "row" instead of "file" and "rank"
     col: number,
@@ -53,4 +54,10 @@ export interface HandArrow { // Arrow going from a piece in hand to a board squa
     piecetype: Piecetype,
     color: Color,
     toSq?: Square
+}
+export interface Highlight {
+    style: string,
+    type: HighlightType,
+    alpha?: number,
+    sq: Square
 }

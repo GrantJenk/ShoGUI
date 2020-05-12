@@ -1,7 +1,7 @@
 import GUI from "./gui";
 import Board from "./board";
 import Hand from "./hand";
-import { Config, Piece, Square, Color, SquareArrow, HandArrow } from "./types";
+import { Config, Piece, Square, Color, SquareArrow, HandArrow, Highlight } from "./types";
 import { isPosInsideRect, squaresEqual, isSquareArrow, isHandArrow, arrowsEqual } from "./util";
 
 interface DraggingPiece {
@@ -19,7 +19,10 @@ export default class ShoGUI {
     private currentArrow: SquareArrow|HandArrow|undefined;
     private arrowList: (SquareArrow|HandArrow)[];
     private activeSquare: Square|undefined;
+    private currentHighlight: Highlight|undefined;
+    private highlightList: Highlight[];
     private draggingPiece: DraggingPiece|undefined;
+    private rightClickSq: Square|undefined;
 
     constructor(config: Config) {
         let self = this;
@@ -37,6 +40,7 @@ export default class ShoGUI {
         this.gui = new GUI(this.board, this.handMap, this.canvas);
 
         this.arrowList = [];
+        this.highlightList = [];
 
         this.canvas.addEventListener('mousedown', function(e) {
             self.onMouseDown(e);
@@ -76,8 +80,29 @@ export default class ShoGUI {
         this.gui.flipBoard();
     }
 
+    public addHighlight(highlight: Highlight) {
+        this.highlightList.push(highlight);
+    }
+
+    public removeHighlight(highlight: Highlight): boolean {
+        let i = 0;
+        for (let tmphighlight of this.highlightList) {
+            if ( squaresEqual(tmphighlight.sq, highlight.sq) ) {
+                this.highlightList.splice(i, 1);
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+
+    public clearHighlights() {
+        this.highlightList = [];
+    }
+
     public addArrow(arrow: SquareArrow|HandArrow): boolean {
         if (arrow.toSq === undefined) return false;
+        if (isSquareArrow(arrow) && squaresEqual(arrow.toSq, arrow.fromSq)) return false;
         this.arrowList.push(arrow);
         return true;
     }
@@ -121,7 +146,15 @@ export default class ShoGUI {
         this.gui.clearCanvas();
 
         if (this.activeSquare) {
-            this.gui.highlightSquare('mintcream', this.activeSquare);
+            this.gui.highlightSquare( {style: 'mintcream', type: 'fill', sq:this.activeSquare} );
+        }
+
+        if (this.currentHighlight) {
+            this.gui.highlightSquare(this.currentHighlight);
+        }
+
+        for (let highlight of this.highlightList) {
+            this.gui.highlightSquare(highlight);
         }
 
         this.gui.drawBoard();
@@ -173,6 +206,7 @@ export default class ShoGUI {
             return;
         }
 
+        this.clearHighlights();
         this.clearArrows();
 
         let rect = this.canvas.getBoundingClientRect();
@@ -252,8 +286,16 @@ export default class ShoGUI {
                 if ( !this.removeArrow(this.currentArrow) ) {
                     this.addArrow(this.currentArrow);
                 }
-                this.currentArrow = undefined;
             }
+            if (this.currentHighlight) {
+                if (this.currentHighlight.type !== 'hidden') {
+                    if ( !this.removeHighlight(this.currentHighlight) ) {
+                        this.addHighlight(this.currentHighlight);
+                    }
+                }
+            }
+            this.currentHighlight = undefined;
+            this.currentArrow = undefined;
         }
     }
 
@@ -266,6 +308,14 @@ export default class ShoGUI {
         if ( this.draggingPiece) {
             this.draggingPiece.x = mouseX;
             this.draggingPiece.y = mouseY;
+        }
+
+        if (this.currentHighlight) {
+            if (hoverSq && !squaresEqual(this.currentHighlight.sq, hoverSq) ) {
+                this.currentHighlight.type = 'hidden'; // Just hide it for now incase the user brings the mouse back to the square
+            } else if (this.currentHighlight.type === 'hidden' && hoverSq && squaresEqual(this.currentHighlight.sq, hoverSq)) {
+                this.currentHighlight.type = 'circle';
+            }
         }
 
         if (this.currentArrow) {
@@ -284,6 +334,7 @@ export default class ShoGUI {
         let clickedSq = this.gui.pos2Square(mouseX, mouseY);
 
         if (clickedSq && !this.draggingPiece) {
+            this.currentHighlight = { style: 'blue', type: 'circle', sq: clickedSq, alpha: 0.6 };
             this.currentArrow = { style: 'blue', fromSq: clickedSq, toSq: clickedSq };
         }
 

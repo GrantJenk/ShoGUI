@@ -1,4 +1,4 @@
-import { Color, Piece, Piecetype, Rect, Square, Move, Drop, SquareArrow, HandArrow } from "./types";
+import { Color, Piece, Piecetype, Rect, Square, SquareArrow, HandArrow, Highlight } from "./types";
 import Board from "./board";
 import Hand from "./hand";
 import { squaresEqual } from "./util";
@@ -220,14 +220,43 @@ export default class GUI {
         this.ctx.globalAlpha = 1;
     }
 
-    public highlightSquare(style: string, sq: Square) {
-        let pos = this.square2Pos(sq.col, sq.row);
+    public highlightSquare(highlight: Highlight): boolean {
+        if (highlight.type === 'hidden') return false;
+        let pos = this.square2Pos(highlight.sq.col, highlight.sq.row);
 
-        this.ctx.fillStyle = style;
-        this.ctx.fillRect(pos.x, 
-            pos.y,
-            this.sqSize,
-            this.sqSize);
+        this.ctx.save();
+        this.ctx.fillStyle = highlight.style;
+        this.ctx.strokeStyle = highlight.style;
+        this.ctx.lineWidth = this.canvas.width/500;
+        if (highlight.alpha) {
+            this.ctx.globalAlpha = highlight.alpha;
+        }
+        switch(highlight.type) {
+            case 'fill':
+                this.ctx.fillRect(pos.x, pos.y, this.sqSize, this.sqSize);
+                break;
+
+            case 'outline':
+                this.ctx.strokeRect(pos.x, pos.y, this.sqSize, this.sqSize);
+                break;
+
+            case 'circle':
+                this.ctx.beginPath();
+                this.ctx.arc(pos.centerX, pos.centerY, this.sqSize/2 - 4, 0, 2 * Math.PI);
+                this.ctx.stroke();
+                break;
+/*
+            case 'dot':
+                this.ctx.beginPath();
+                this.ctx.arc(pos.centerX, pos.centerY, this.sqSize/8, 0, 2 * Math.PI);
+                this.ctx.fill();
+                break;
+*/
+            default:
+                return false;
+        }
+        this.ctx.restore();
+        return true;
     }
 
     public drawArrow(style: string, fromx: number, fromy: number, tox: number, toy: number) {
@@ -271,15 +300,9 @@ export default class GUI {
         let toSqPos = this.square2Pos(arrow.toSq.col, arrow.toSq.row);
         let fromSqPos = this.square2Pos(arrow.fromSq.col, arrow.fromSq.row);
 
-        this.arrowCtx.save();
-        if (squaresEqual(arrow.toSq, arrow.fromSq) ) {
-            this.arrowCtx.strokeStyle = arrow.style;
-            this.arrowCtx.lineWidth = this.arrowCanvas.width/200;
-            this.arrowCtx.strokeRect(toSqPos.x, toSqPos.y, this.sqSize, this.sqSize);
-        } else {
+        if ( !squaresEqual(arrow.toSq, arrow.fromSq) ) {
             this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
         }
-        this.arrowCtx.restore();
     }
 
     public drawHandArrow(arrow: HandArrow) {

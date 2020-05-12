@@ -19,8 +19,23 @@ export function isPosInsideRect(rect: Rect, x: number, y: number) {
  * @param {Square} sq1
  * @param {Square} sq2
  */
-export function squaresEqual(sq1: Square, sq2: Square) {
+export function squaresEqual(sq1: Square, sq2: Square): boolean {
     if (sq1.col === sq2.col && sq1.row === sq2.row) return true;
+    return false;
+}
+
+export function arrowsEqual(arrow1: SquareArrow|HandArrow, arrow2: SquareArrow|HandArrow): boolean {
+    if ( isSquareArrow(arrow1) && isSquareArrow(arrow2) ) {
+        if ( squaresEqual(arrow1.toSq, arrow2.toSq) && squaresEqual(arrow1.fromSq, arrow2.fromSq) ) {
+            return true;
+        }
+    } else if ( isHandArrow(arrow1) && isHandArrow(arrow2) ) {
+        if (arrow1.piecetype === arrow2.piecetype && arrow1.color === arrow2.color) {
+            if ( arrow1.toSq && arrow2.toSq && squaresEqual(arrow1.toSq, arrow2.toSq) ) {
+                return true;
+            }
+        }
+    }
     return false;
 }
 

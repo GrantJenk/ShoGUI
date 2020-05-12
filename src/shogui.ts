@@ -2,7 +2,7 @@ import GUI from "./gui";
 import Board from "./board";
 import Hand from "./hand";
 import { Config, Piece, Square, Color, SquareArrow, HandArrow } from "./types";
-import { isPosInsideRect, squaresEqual, isSquareArrow, isHandArrow } from "./util";
+import { isPosInsideRect, squaresEqual, isSquareArrow, isHandArrow, arrowsEqual } from "./util";
 
 interface DraggingPiece {
     piece: Piece,
@@ -82,6 +82,18 @@ export default class ShoGUI {
         return true;
     }
 
+    public removeArrow(arrow: SquareArrow|HandArrow): boolean {
+        let i = 0;
+        for (let cmpArrow of this.arrowList) {
+            if ( arrowsEqual(cmpArrow, arrow) ) {
+                this.arrowList.splice(i, 1);
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+
     public clearArrows() {
         this.arrowList = [];
     }
@@ -146,11 +158,7 @@ export default class ShoGUI {
 
     private drawArrow(arrow: SquareArrow|HandArrow) {
         if ( isSquareArrow(arrow) ) {
-            /*if ( squaresEqual(arrow.fromSq, arrow.toSq) ) {
-                
-            } else {*/
-                this.gui.drawSquareArrow(arrow);
-            //}
+            this.gui.drawSquareArrow(arrow);
         } else if ( isHandArrow(arrow) ) {
             if ( !arrow.toSq ) {
                 // Don't draw arrow, just draw highlight or something...
@@ -241,7 +249,9 @@ export default class ShoGUI {
 
         if (event.button === 2) { // Right mouse button
             if (this.currentArrow) {
-                this.addArrow(this.currentArrow);
+                if ( !this.removeArrow(this.currentArrow) ) {
+                    this.addArrow(this.currentArrow);
+                }
                 this.currentArrow = undefined;
             }
         }

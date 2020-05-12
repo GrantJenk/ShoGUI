@@ -95,45 +95,7 @@ export default class GUI {
     public flipBoard(): void {
         this.orientation = this.orientation === 'black' ? 'white' : 'black';
     }
-/*
-    public drawGame(curArrow?: SquareArrow): void {
-        this.clearCanvas();
 
-        if (this.selectedPieceSq) {
-            this.highlightSquare('mintcream', this.selectedPieceSq);
-        }
-
-        this.drawBoard();
-        this.drawFileRankLabels();
-
-        for (let f = 0; f < 9; f++) {
-            for (let r = 0; r < 9; r++) {
-                this.drawPiece( {col:f, row:r} );
-            }
-        }
-
-        this.drawHand('black'); 
-        this.drawHand('white');
-
-        if (this.draggingPiece) {
-            this.drawDraggingPiece();
-        }
-
-        for (let arrow of this.arrowList) {
-            let toSqPos = this.square2Pos(arrow.toSq.col, arrow.toSq.row);
-            let fromSqPos = this.square2Pos(arrow.fromSq.col, arrow.fromSq.row);
-            this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
-        }
-        if (curArrow) {
-            let toSqPos = this.square2Pos(curArrow.toSq.col, curArrow.toSq.row);
-            let fromSqPos = this.square2Pos(curArrow.fromSq.col, curArrow.fromSq.row);
-            this.drawArrow(curArrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
-        }
-        this.ctx.globalAlpha = 0.6;
-        this.ctx.drawImage(this.arrowCanvas, 0, 0);
-        this.ctx.globalAlpha = 1.0;
-    }
-*/
     public clearCanvas() {
         this.ctx.fillStyle = 'slategrey';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -303,6 +265,26 @@ export default class GUI {
  
         this.arrowCtx.closePath();
         this.arrowCtx.fill();
+    }
+
+    public drawSquareArrow(arrow: SquareArrow) {
+        let toSqPos = this.square2Pos(arrow.toSq.col, arrow.toSq.row);
+        let fromSqPos = this.square2Pos(arrow.fromSq.col, arrow.fromSq.row);
+        this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+    }
+
+    public drawHandArrow(arrow: HandArrow) {
+        let rect;
+        if (arrow.color === this.orientation) {
+            rect = this.playerHandRectMap.get(arrow.piecetype);
+        } else {
+            rect = this.opponentHandRectMap.get(arrow.piecetype);
+        }
+            if (!rect) return false;
+            if (!arrow.toSq) return false;
+        let toSqPos = this.square2Pos(arrow.toSq.col, arrow.toSq.row);
+
+        this.drawArrow(arrow.style, rect.x+(rect.width/2), rect.y+(rect.height/2), toSqPos.centerX, toSqPos.centerY);
     }
 
     public drawArrowCanvas(alpha: number) {

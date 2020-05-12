@@ -1,8 +1,8 @@
 import GUI from "./gui";
 import Board from "./board";
 import Hand from "./hand";
-import { Config, Piece, Square, Color, SquareArrow } from "./types";
-import { isPosInsideRect, squaresEqual } from "./util";
+import { Config, Piece, Square, Color, SquareArrow, HandArrow } from "./types";
+import { isPosInsideRect, squaresEqual, isSquareArrow, isHandArrow } from "./util";
 
 interface DraggingPiece {
     piece: Piece,
@@ -16,8 +16,8 @@ export default class ShoGUI {
     private handMap: Map<Color, Hand>;
     private canvas: HTMLCanvasElement;
     private gui: GUI;
-    private currentArrow: SquareArrow|undefined;
-    private arrowList: SquareArrow[];
+    private currentArrow: SquareArrow|HandArrow|undefined;
+    private arrowList: (SquareArrow|HandArrow)[];
     private activeSquare: Square|undefined;
     private draggingPiece: DraggingPiece|undefined;
 
@@ -54,8 +54,8 @@ export default class ShoGUI {
         })
 
         window.addEventListener('keydown', function(e) {
-            //self.gui.flipBoard();
-            console.log(self.arrowList);
+            self.gui.flipBoard();
+            //console.log(self.arrowList);
             window.requestAnimationFrame( () => self.drawGame() );
         })
 
@@ -76,8 +76,10 @@ export default class ShoGUI {
         this.gui.flipBoard();
     }
 
-    public addArrow(arrow: SquareArrow) {
+    public addArrow(arrow: SquareArrow|HandArrow): boolean {
+        if (arrow.toSq === undefined) return false;
         this.arrowList.push(arrow);
+        return true;
     }
 
     public clearArrows() {
@@ -93,7 +95,6 @@ export default class ShoGUI {
 
         if (success) {
             this.board.movePiece(srcSq, destSq);
-            //this.gui.setLastMove( {src: srcSq, dest: destSq} );
         }
     }
 
@@ -133,18 +134,30 @@ export default class ShoGUI {
         }
 
         if (this.currentArrow) {
-            let toSqPos = this.gui.square2Pos(this.currentArrow.toSq.col, this.currentArrow.toSq.row);
-            let fromSqPos = this.gui.square2Pos(this.currentArrow.fromSq.col, this.currentArrow.fromSq.row);
-            this.gui.drawArrow(this.currentArrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+           this.drawArrow(this.currentArrow);
         }
 
         for (let arrow of this.arrowList) {
-            let toSqPos = this.gui.square2Pos(arrow.toSq.col, arrow.toSq.row);
-            let fromSqPos = this.gui.square2Pos(arrow.fromSq.col, arrow.fromSq.row);
-            this.gui.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+           this.drawArrow(arrow);
         }
 
         this.gui.drawArrowCanvas(0.6);
+    }
+
+    private drawArrow(arrow: SquareArrow|HandArrow) {
+        if ( isSquareArrow(arrow) ) {
+            if ( squaresEqual(arrow.fromSq, arrow.toSq) ) {
+                // Don't draw arrow, just draw highlight or something...
+            } else {
+                this.gui.drawSquareArrow(arrow);
+            }
+        } else if ( isHandArrow(arrow) ) {
+            if ( !arrow.toSq ) {
+                // Don't draw arrow, just draw highlight or something...
+            } else {
+                this.gui.drawHandArrow(arrow);
+            }
+        }
     }
 
     private onMouseDown(event: MouseEvent) {
@@ -228,7 +241,7 @@ export default class ShoGUI {
 
         if (event.button === 2) { // Right mouse button
             if (this.currentArrow) {
-                this.arrowList.push(this.currentArrow);
+                this.addArrow(this.currentArrow);
                 this.currentArrow = undefined;
             }
         }
@@ -248,6 +261,8 @@ export default class ShoGUI {
         if (this.currentArrow) {
             if (hoverSq) {
                 this.currentArrow.toSq = hoverSq;
+            } else {
+                this.currentArrow.toSq = undefined;
             }
         }
     }
@@ -260,6 +275,19 @@ export default class ShoGUI {
 
         if (clickedSq && !this.draggingPiece) {
             this.currentArrow = { style: 'blue', fromSq: clickedSq, toSq: clickedSq };
+        }
+
+        for (let [key, value] of this.gui.getPlayerHandRectMap()) {
+            if (isPosInsideRect(value, mouseX, mouseY)) {
+                this.currentArrow = { style: 'black', piecetype: key, color: this.gui.getOrientation() };
+            }
+        }
+
+        for (let [key, value] of this.gui.getOpponentHandRectMap()) {
+            if (isPosInsideRect(value, mouseX, mouseY)) {
+                let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
+                this.currentArrow = { style: 'black', piecetype: key, color: opponentColor };
+            }
         }
 
         this.draggingPiece = undefined;

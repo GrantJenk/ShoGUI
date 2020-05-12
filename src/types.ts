@@ -43,14 +43,14 @@ export interface Rect {
     width: number,
     height: number
 }
-export interface SquareArrow {
+export interface SquareArrow { // Arrow going from one board square to another
     style: string,
     fromSq: Square,
     toSq: Square
 }
-export interface HandArrow {
+export interface HandArrow { // Arrow going from a piece in hand to a board square
     style: string,
-    piece: Piecetype,
+    piecetype: Piecetype,
     color: Color,
-    toSq: Square
+    toSq?: Square
 }

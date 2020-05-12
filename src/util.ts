@@ -1,4 +1,4 @@
-import { Rect, Square, Move, Drop, Coordinate } from "./types";
+import { Rect, Square, Move, Drop, Coordinate, SquareArrow, HandArrow } from "./types";
 
 /**
  * Determines if something is inside the Rect
@@ -30,6 +30,14 @@ export function isMove(arg: any): arg is Move {
 
 export function isDrop(arg: any): arg is Drop {
     return arg && arg.piece && arg.dest;
+}
+
+export function isSquareArrow(arg: any): arg is SquareArrow {
+    return arg && arg.style && arg.fromSq && arg.toSq;
+}
+
+export function isHandArrow(arg: any): arg is HandArrow {
+    return arg && arg.style && arg.piecetype && arg.color && arg.toSq;
 }
 
 /**

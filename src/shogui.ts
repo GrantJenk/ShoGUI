@@ -146,11 +146,11 @@ export default class ShoGUI {
 
     private drawArrow(arrow: SquareArrow|HandArrow) {
         if ( isSquareArrow(arrow) ) {
-            if ( squaresEqual(arrow.fromSq, arrow.toSq) ) {
-                // Don't draw arrow, just draw highlight or something...
-            } else {
+            /*if ( squaresEqual(arrow.fromSq, arrow.toSq) ) {
+                
+            } else {*/
                 this.gui.drawSquareArrow(arrow);
-            }
+            //}
         } else if ( isHandArrow(arrow) ) {
             if ( !arrow.toSq ) {
                 // Don't draw arrow, just draw highlight or something...

@@ -230,7 +230,7 @@ export default class GUI {
             this.sqSize);
     }
 
-    public drawArrow(style: string, fromx:number, fromy: number, tox: number, toy: number) {
+    public drawArrow(style: string, fromx: number, fromy: number, tox: number, toy: number) {
         let angle = Math.atan2(toy - fromy, tox - fromx);
         let radius = this.arrowCanvas.width/40;
         let x = tox - radius * Math.cos(angle);
@@ -270,7 +270,16 @@ export default class GUI {
     public drawSquareArrow(arrow: SquareArrow) {
         let toSqPos = this.square2Pos(arrow.toSq.col, arrow.toSq.row);
         let fromSqPos = this.square2Pos(arrow.fromSq.col, arrow.fromSq.row);
-        this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+
+        this.arrowCtx.save();
+        if (squaresEqual(arrow.toSq, arrow.fromSq) ) {
+            this.arrowCtx.strokeStyle = arrow.style;
+            this.arrowCtx.lineWidth = this.arrowCanvas.width/200;
+            this.arrowCtx.strokeRect(toSqPos.x, toSqPos.y, this.sqSize, this.sqSize);
+        } else {
+            this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+        }
+        this.arrowCtx.restore();
     }
 
     public drawHandArrow(arrow: HandArrow) {

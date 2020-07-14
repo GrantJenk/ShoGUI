@@ -9,7 +9,7 @@ export default class Hand {
     }
 
     public empty() {
-        this.pieces.set('pawn', 0);
+        this.pieces.set('pawn', 1);
         this.pieces.set('lance', 0);
         this.pieces.set('knight', 0);
         this.pieces.set('silver', 0);

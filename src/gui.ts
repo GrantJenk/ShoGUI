@@ -1,7 +1,6 @@
-import { Color, Piece, Piecetype, Rect, Square, SquareArrow, HandArrow, Highlight } from "./types";
+import { Color, Piece, Piecetype, Rect, Square, allSquares, SquareArrow, HandArrow, Highlight } from "./types";
 import Board from "./board";
 import Hand from "./hand";
-import { squaresEqual } from "./util";
 
 export default class GUI {
     private board: Board;
@@ -16,15 +15,11 @@ export default class GUI {
     private boardRect: Rect;
     private playerHandRectMap: Map<Piecetype, Rect>;
     private opponentHandRectMap: Map<Piecetype, Rect>;
-    private selectedPieceSq: Square|undefined;
-    private draggingPiece: Piece|undefined;
-    private draggingPiecePos: {x: number, y: number};
 
     constructor(board: Board, playerHands: Map<Color, Hand>, canvas: HTMLCanvasElement) {
         this.handMap = playerHands;
         this.board = board;
         this.orientation = 'black';
-        this.draggingPiecePos = {x:-1, y:-1};
 
         this.canvas = canvas;
         let tmpCtx = this.canvas.getContext('2d');
@@ -47,12 +42,18 @@ export default class GUI {
         // Load images
         this.pieceImageMap = new Map<Piecetype, HTMLImageElement>();
         this.pieceImageMap.set('pawn', new Image());
+        //this.pieceImageMap.set('+pawn', new Image());
         this.pieceImageMap.set('lance', new Image());
+        //this.pieceImageMap.set('+lance', new Image());
         this.pieceImageMap.set('knight', new Image());
+        //this.pieceImageMap.set('+knight', new Image());
         this.pieceImageMap.set('silver', new Image());
+        //this.pieceImageMap.set('+silver', new Image());
         this.pieceImageMap.set('gold', new Image());
         this.pieceImageMap.set('bishop', new Image());
+        //this.pieceImageMap.set('+bishop', new Image());
         this.pieceImageMap.set('rook', new Image());
+        //this.pieceImageMap.set('+rook', new Image());
         this.pieceImageMap.set('king', new Image());
 
         for (let [key, value] of this.pieceImageMap) {
@@ -159,31 +160,11 @@ export default class GUI {
     public drawPieceAtSquare(sq: Square): boolean {
         let piece: Piece|undefined = this.board.getPiece(sq);
         if (piece) {
-            let pos = this.square2Pos(sq.col, sq.row);
-            if (this.selectedPieceSq && this.draggingPiece) {
-                if (squaresEqual(this.selectedPieceSq, sq)) {
-                    return false;
-                }
-            }
+            let pos = this.square2Pos(sq);
             this.drawPiece(piece, pos.x, pos.y);
+            return true;
         }
-        return true;
-    }
-
-    public drawDraggingPiece() {
-        if (this.draggingPiece) {
-            let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(this.draggingPiece.type);
-            if (!pieceImg) {
-                throw new Error("Failed to load piece image: " + this.draggingPiece.type);
-            }
-            let x = this.draggingPiecePos.x - this.sqSize/2;
-            let y = this.draggingPiecePos.y - this.sqSize/2;
-            if (this.draggingPiece.color === this.orientation) {
-                this.ctx.drawImage(pieceImg, x, y, this.sqSize, this.sqSize);
-            } else {
-                this.drawInverted(pieceImg, x, y, this.sqSize, this.sqSize);
-            }
-        }
+        return false;
     }
 
     public drawHand(color: Color) {
@@ -222,12 +203,11 @@ export default class GUI {
 
     public highlightSquare(highlight: Highlight): boolean {
         if (highlight.type === 'hidden') return false;
-        let pos = this.square2Pos(highlight.sq.col, highlight.sq.row);
+        let pos = this.square2Pos(highlight.sq);
 
         this.ctx.save();
         this.ctx.fillStyle = highlight.style;
         this.ctx.strokeStyle = highlight.style;
-        this.ctx.lineWidth = this.canvas.width/500;
         if (highlight.alpha) {
             this.ctx.globalAlpha = highlight.alpha;
         }
@@ -237,10 +217,12 @@ export default class GUI {
                 break;
 
             case 'outline':
-                this.ctx.strokeRect(pos.x, pos.y, this.sqSize, this.sqSize);
+                this.ctx.lineWidth = this.canvas.width/200;
+                this.ctx.strokeRect(pos.x + 4, pos.y + 4, this.sqSize - 8, this.sqSize - 8);
                 break;
 
             case 'circle':
+                this.ctx.lineWidth = this.canvas.width/500;
                 this.ctx.beginPath();
                 this.ctx.arc(pos.centerX, pos.centerY, this.sqSize/2 - 4, 0, 2 * Math.PI);
                 this.ctx.stroke();
@@ -260,6 +242,7 @@ export default class GUI {
     }
 
     public drawArrow(style: string, fromx: number, fromy: number, tox: number, toy: number) {
+        this.arrowCtx.save();
         let angle = Math.atan2(toy - fromy, tox - fromx);
         let radius = this.arrowCanvas.width/40;
         let x = tox - radius * Math.cos(angle);
@@ -294,14 +277,21 @@ export default class GUI {
  
         this.arrowCtx.closePath();
         this.arrowCtx.fill();
+        this.arrowCtx.restore();
     }
 
     public drawSquareArrow(arrow: SquareArrow) {
-        let toSqPos = this.square2Pos(arrow.toSq.col, arrow.toSq.row);
-        let fromSqPos = this.square2Pos(arrow.fromSq.col, arrow.fromSq.row);
+        let toSqPos = this.square2Pos(arrow.toSq);
+        let fromSqPos = this.square2Pos(arrow.fromSq);
 
-        if ( !squaresEqual(arrow.toSq, arrow.fromSq) ) {
+        if (arrow.toSq !== arrow.fromSq) {
             this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+        } else {
+            this.arrowCtx.strokeStyle = arrow.style;
+            this.arrowCtx.lineWidth = this.canvas.width/500;
+            this.arrowCtx.beginPath();
+            this.arrowCtx.arc(toSqPos.centerX, toSqPos.centerY, this.sqSize/2 - 4, 0, 2 * Math.PI);
+            this.arrowCtx.stroke();
         }
     }
 
@@ -310,11 +300,12 @@ export default class GUI {
         if (arrow.color === this.orientation) {
             rect = this.playerHandRectMap.get(arrow.piecetype);
         } else {
+
             rect = this.opponentHandRectMap.get(arrow.piecetype);
         }
             if (!rect) return false;
             if (!arrow.toSq) return false;
-        let toSqPos = this.square2Pos(arrow.toSq.col, arrow.toSq.row);
+        let toSqPos = this.square2Pos(arrow.toSq);
 
         this.drawArrow(arrow.style, rect.x+(rect.width/2), rect.y+(rect.height/2), toSqPos.centerX, toSqPos.centerY);
     }
@@ -343,13 +334,15 @@ export default class GUI {
             col = 8 - col;
             row = 8 - row;
         }
-        if (col < 0 || row < 0 || col > this.board.getDimensions().cols - 1|| row > this.board.getDimensions().rows - 1) {
+        if (col < 0 || row < 0 || col > 9 - 1 || row > 9 - 1) {
             return undefined;
         }
-        return { col, row };
+        return allSquares[ 9*col + row ];
     }
 
-    public square2Pos(col: number, row: number) {
+    public square2Pos(sq: Square) {
+        let col = 9 - parseInt(sq[0]);
+        let row = sq.charCodeAt(1) - 97;
         if (this.orientation === 'white') {
             col = 8 - col;
             row = 8 - row;
@@ -359,21 +352,6 @@ export default class GUI {
         let centerX = x + (this.sqSize/2);
         let centerY = y + (this.sqSize/2)
         return { x, y, centerX, centerY };
-    }
-
-    public getSelectedPiece(): Piece|undefined {
-        if (this.selectedPieceSq) {
-            return this.board.getPiece(this.selectedPieceSq);
-        }
-        return undefined;
-    }
-
-    public setSelectedPieceSq(sq: Square): void {
-        this.selectedPieceSq = sq;
-    }
-
-    public resetSelectedPieceSq() {
-        this.selectedPieceSq = undefined;
     }
 
     public getBoardRect() {
@@ -390,10 +368,6 @@ export default class GUI {
 
     public getOpponentHandRectMap() {
         return this.opponentHandRectMap;
-    }
-
-    public getSelectedPieceSq() {
-        return this.selectedPieceSq;
     }
 
     public getOrientation() {

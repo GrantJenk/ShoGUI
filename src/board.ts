@@ -105,7 +105,7 @@ export default class Board {
     public removeFromHand(color: Color, piecetype: Piecetype, num = 1) {
         let hand = this.playerHands.get(color);
         let curAmount = hand?.get(piecetype);
-        if (!curAmount || curAmount - num <= 0) { 
+        if (!curAmount || curAmount - num < 0) { 
             return false;
         }
         hand?.set(piecetype, curAmount - num);

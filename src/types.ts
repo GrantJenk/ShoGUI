@@ -1,6 +1,7 @@
 export interface Config {
     orientation?: Color,
     onMovePiece?: (...args: Square[]) => boolean,
+    onDropPiece?: (color: Color, piecetype: Piecetype, sq: Square) => boolean,
     onSelectPiece?: (piece: Piece, sq: Square) => boolean,
     onDeselectPiece?: () => boolean
 }

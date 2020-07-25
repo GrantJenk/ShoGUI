@@ -1,6 +1,6 @@
 import GUI from "./gui";
 import Board from "./board";
-import { Config, Piece, Square, allSquares, Color, SquareArrow, HandArrow, Highlight } from "./types";
+import { Config, Piece, Piecetype, Square, allSquares, Color, SquareArrow, HandArrow, Highlight } from "./types";
 import { isPosInsideRect, isSquareArrow, isHandArrow, arrowsEqual, sfen2Piecetype } from "./util";
 
 interface DraggingPiece {
@@ -171,6 +171,18 @@ export default class ShoGUI {
         }
     }
 
+    public dropPiece(color: Color, piecetype: Piecetype, sq: Square, num = 1) {
+        let success = true;
+
+        if (typeof this.config.onDropPiece === "function") {
+            success = this.config.onDropPiece(color, piecetype, sq);
+        }
+
+        if (success) {
+            this.board.dropPiece(color, piecetype, sq, num);
+        }
+    }
+
     private refreshCanvas() {
         this.gui.clearCanvas();
 
@@ -297,7 +309,7 @@ export default class ShoGUI {
                     this.activeSquare = undefined;
                 }
             } else if (this.draggingPiece && !this.activeSquare) {
-                this.board.dropPiece(this.draggingPiece.piece.color, this.draggingPiece.piece.type, sqOver);
+                this.dropPiece(this.draggingPiece.piece.color, this.draggingPiece.piece.type, sqOver);
             }
         } else {
             this.activeSquare = undefined;

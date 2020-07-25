@@ -3,7 +3,7 @@ import { Square } from "./types";
 
 let shogui = new ShoGUI({onMovePiece: onPieceMove});
 
-shogui.setPosition('lnsgk2nl/1r4gs1/p1pppp1pp/1p4p2/7P1/2P6/PP1PPPP1P/1SG4R1/L+N2KGSNL');
+shogui.setPosition('lnsgk2nl/1r4gs1/p1pppp1pp/1p4p2/7P1/2P6/PP1PPPP1P/1SG4R1/L+N2KGSNL b 3PB5p7r');
 
 /*
 function testadd() {
@@ -29,7 +29,10 @@ blink();
 */
 
 function onPieceMove(srcSq: Square, destSq: Square) {
-    shogui.addArrow({style: 'black', fromSq: srcSq, toSq: destSq});
+    shogui.clearHighlights();
+    shogui.addHighlight({style: 'lightgrey', type: 'fill', sq: srcSq, });
+    shogui.addHighlight({style: 'lightgrey', type: 'fill', sq: destSq, });
+    //shogui.addArrow({style: 'black', fromSq: srcSq, toSq: destSq});
     console.log( srcSq + "-->" + destSq);
     return true;
 }

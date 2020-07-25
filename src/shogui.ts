@@ -2,7 +2,7 @@ import GUI from "./gui";
 import Board from "./board";
 import Hand from "./hand";
 import { Config, Piece, Square, allSquares, Color, SquareArrow, HandArrow, Highlight } from "./types";
-import { isPosInsideRect, isSquareArrow, isHandArrow, arrowsEqual } from "./util";
+import { isPosInsideRect, isSquareArrow, isHandArrow, arrowsEqual, sfen2Piecetype } from "./util";
 
 interface DraggingPiece {
     piece: Piece,
@@ -78,6 +78,27 @@ export default class ShoGUI {
         let sfenHand = sfenArr[2];
 
         this.board.setPosition(sfenBoard);
+
+        let amt = 1;
+        for (let char of sfenHand) {
+            let ptype = sfen2Piecetype(char);
+            if ( !isNaN(Number(char)) ) {
+                amt = Number(char);
+                continue;
+            } else {
+                if (!ptype) {
+                    throw new Error('ERROR: Cannot get piecetype from sfen character ' + char);
+                }
+
+                if (char.toUpperCase() === char) {
+                    this.handMap.get('black')?.addPiece(ptype, amt);
+                } else if (char.toLowerCase() === char) {
+                    this.handMap.get('white')?.addPiece(ptype, amt);
+                }
+
+                amt = 1;
+            }
+        }
     }
     
 
@@ -162,12 +183,12 @@ export default class ShoGUI {
     private refreshCanvas() {
         this.gui.clearCanvas();
 
-        if (this.activeSquare) {
-            this.gui.highlightSquare( {style: 'mintcream', type: 'fill', sq:this.activeSquare} );
-        }
-
         for (let highlight of this.highlightList) {
             this.gui.highlightSquare(highlight);
+        }
+
+        if (this.activeSquare) {
+            this.gui.highlightSquare( {style: 'mintcream', type: 'fill', sq:this.activeSquare} );
         }
 
         this.gui.drawBoard();

@@ -32,20 +32,28 @@ export function arrowsEqual(arrow1: SquareArrow|HandArrow, arrow2: SquareArrow|H
 export function sfen2Piecetype(sfen: string): Piecetype|undefined {
     switch (sfen.toUpperCase()) {
         case 'P':
+        case 'p':
             return 'pawn';
         case 'L':
+        case 'l':
             return 'lance';
         case 'N':
+        case 'n':
             return 'knight';
         case 'S':
+        case 's':
             return 'silver';
         case 'G':
+        case 'g':
             return 'gold';
         case 'R':
+        case 'r':
             return 'rook';
         case 'B':
+        case 'b':
             return 'bishop';
         case 'K':
+        case 'k':
             return 'king';
         default:
             return undefined;

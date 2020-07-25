@@ -1,11 +1,35 @@
-import { Piece, Square, Color, allSquares } from "./types";
+import { Piece, Piecetype, Square, Color, allSquares } from "./types";
 import { sfen2Piecetype } from "./util";
 
 export default class Board {
     private pieceList: Map<Square, Piece>;
+    private playerHands: Map<Color, Map<Piecetype, number> >;
 
     constructor() {
         this.pieceList = new Map<Square, Piece>();
+        this.playerHands = new Map<Color, Map<Piecetype, number> >();
+
+        let blackHand = new Map<Piecetype, number>();
+        let whiteHand = new Map<Piecetype, number>();
+
+        blackHand.set('pawn', 0);
+        blackHand.set('lance', 0);
+        blackHand.set('knight', 0);
+        blackHand.set('silver', 0);
+        blackHand.set('gold', 0);
+        blackHand.set('bishop', 0);
+        blackHand.set('rook', 0);
+
+        whiteHand.set('pawn', 0);
+        whiteHand.set('lance', 0);
+        whiteHand.set('knight', 0);
+        whiteHand.set('silver', 0);
+        whiteHand.set('gold', 0);
+        whiteHand.set('bishop', 0);
+        whiteHand.set('rook', 0);
+
+        this.playerHands.set('black', blackHand);
+        this.playerHands.set('white', whiteHand);
     }
 
     /** 
@@ -58,5 +82,37 @@ export default class Board {
 
     public addPiece(piece: Piece, sq: Square) {
         this.pieceList.set(sq, piece);
+    }
+
+    public dropPiece(color: Color, piecetype: Piecetype, sq: Square, num = 1) {
+        if (this.removeFromHand(color, piecetype, num)) {
+            this.pieceList.set(sq, {type: piecetype, color: color});
+            return true;
+        }
+        return false;
+    }
+
+    public add2Hand(color: Color, piecetype: Piecetype, num = 1) {
+        let hand = this.playerHands.get(color);
+        let curAmount = hand?.get(piecetype);
+        if (curAmount !== undefined) {
+            hand?.set(piecetype, curAmount + num);
+            return true;
+        }
+        return false;
+    }
+
+    public removeFromHand(color: Color, piecetype: Piecetype, num = 1) {
+        let hand = this.playerHands.get(color);
+        let curAmount = hand?.get(piecetype);
+        if (!curAmount || curAmount - num <= 0) { 
+            return false;
+        }
+        hand?.set(piecetype, curAmount - num);
+        return true;
+    }
+
+    public getNumPiecesInHand(color: Color, piecetype: Piecetype) {
+        return this.playerHands.get(color)?.get(piecetype);
     }
 }

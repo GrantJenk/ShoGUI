@@ -1,6 +1,5 @@
 import GUI from "./gui";
 import Board from "./board";
-import Hand from "./hand";
 import { Config, Piece, Square, allSquares, Color, SquareArrow, HandArrow, Highlight } from "./types";
 import { isPosInsideRect, isSquareArrow, isHandArrow, arrowsEqual, sfen2Piecetype } from "./util";
 
@@ -13,7 +12,6 @@ interface DraggingPiece {
 export default class ShoGUI {
     private config: Config;
     private board: Board;
-    private handMap: Map<Color, Hand>;
     private canvas: HTMLCanvasElement;
     private gui: GUI;
     private currentArrow: SquareArrow|HandArrow|undefined;
@@ -27,14 +25,11 @@ export default class ShoGUI {
         this.config = config;
 
         this.board = new Board();
-        this.handMap = new Map<Color, Hand>();
-        this.handMap.set('black', new Hand());
-        this.handMap.set('white', new Hand());
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = 1350;
         this.canvas.height = this.canvas.width/2 + 20;
-        this.gui = new GUI(this.board, this.handMap, this.canvas);
+        this.gui = new GUI(this.board, this.canvas);
 
         this.arrowList = [];
         this.highlightList = [];
@@ -95,9 +90,9 @@ export default class ShoGUI {
                 }
 
                 if (char.toUpperCase() === char) {
-                    this.handMap.get('black')?.addPiece(ptype, amt);
+                    this.board.add2Hand('black', ptype, amt);
                 } else if (char.toLowerCase() === char) {
-                    this.handMap.get('white')?.addPiece(ptype, amt);
+                    this.board.add2Hand('white', ptype, amt);
                 }
 
                 amt = 1;
@@ -175,13 +170,6 @@ export default class ShoGUI {
         if (success) {
             this.board.movePiece(srcSq, destSq);
         }
-    }
-
-    private dropPiece(piece: Piece, sq: Square) {
-        let hand = this.handMap.get(piece.color);
-            if (!hand) return;
-        this.board.addPiece(piece, sq);
-        hand.removePiece(piece.type);
     }
 
     private refreshCanvas() {
@@ -272,8 +260,8 @@ export default class ShoGUI {
 
         for (let [key, value] of this.gui.getPlayerHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
-                let hand = this.handMap.get(this.gui.getOrientation());
-                if (!hand?.getNumOfPieces(key)) {
+                let numPieces = this.board.getNumPiecesInHand(this.gui.getOrientation(), key);
+                if (!numPieces || numPieces <= 0) {
                     return;
                 }
                 let piece = {type: key, color: this.gui.getOrientation()};
@@ -284,8 +272,8 @@ export default class ShoGUI {
         for (let [key, value] of this.gui.getOpponentHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
-                let hand = this.handMap.get(opponentColor);
-                if (!hand?.getNumOfPieces(key)) {
+                let numPieces = this.board.getNumPiecesInHand(opponentColor, key);
+                if (!numPieces || numPieces <= 0) {
                     return;
                 }
                 let piece = {type: key, color: opponentColor};
@@ -310,7 +298,7 @@ export default class ShoGUI {
                     this.activeSquare = undefined;
                 }
             } else if (this.draggingPiece && !this.activeSquare) {
-                this.dropPiece(this.draggingPiece.piece, sqOver);
+                this.board.dropPiece(this.draggingPiece.piece.color, this.draggingPiece.piece.type, sqOver);
             }
         } else {
             this.activeSquare = undefined;

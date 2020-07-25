@@ -1,10 +1,8 @@
 import { Color, Piece, Piecetype, Rect, Square, allSquares, SquareArrow, HandArrow, Highlight } from "./types";
 import Board from "./board";
-import Hand from "./hand";
 
 export default class GUI {
     private board: Board;
-    private handMap: Map<Color, Hand>;
     private orientation: Color;
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
@@ -16,8 +14,7 @@ export default class GUI {
     private playerHandBounds: Map<Piecetype, Rect>;
     private opponentHandBounds: Map<Piecetype, Rect>;
 
-    constructor(board: Board, playerHands: Map<Color, Hand>, canvas: HTMLCanvasElement) {
-        this.handMap = playerHands;
+    constructor(board: Board, canvas: HTMLCanvasElement) {
         this.board = board;
         this.orientation = 'black';
 
@@ -172,13 +169,11 @@ export default class GUI {
     }
 
     public drawHand(color: Color) {
-        let hand = this.handMap.get(color);
-            if (!hand) return;
         this.ctx.textBaseline = 'bottom';
         this.ctx.fillStyle = 'white';
         if (color === this.orientation) {
             for (let [key, value] of this.playerHandBounds) {
-                let numOfPieces = hand.getNumOfPieces(key);
+                let numOfPieces = this.board.getNumPiecesInHand(color, key);
                     if (numOfPieces === undefined) return;
                 this.ctx.globalAlpha = numOfPieces === 0 ? 0.2 : 1;
                 let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(key);
@@ -190,7 +185,7 @@ export default class GUI {
             }
         } else {
             for (let [key, value] of this.opponentHandBounds) {
-                let numOfPieces = hand.getNumOfPieces(key);
+                let numOfPieces = this.board.getNumPiecesInHand(color, key);
                     if (numOfPieces === undefined) return;
                 this.ctx.globalAlpha = numOfPieces === 0 ? 0.2 : 1;
                 let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(key);

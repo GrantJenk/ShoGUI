@@ -13,8 +13,8 @@ export default class GUI {
     private pieceImageMap: Map<string, HTMLImageElement>;
     private sqSize: number;
     private boardRect: Rect;
-    private playerHandRectMap: Map<Piecetype, Rect>;
-    private opponentHandRectMap: Map<Piecetype, Rect>;
+    private playerHandBounds: Map<Piecetype, Rect>;
+    private opponentHandBounds: Map<Piecetype, Rect>;
 
     constructor(board: Board, playerHands: Map<Color, Hand>, canvas: HTMLCanvasElement) {
         this.handMap = playerHands;
@@ -66,8 +66,8 @@ export default class GUI {
 
         // Hand Rects
         let tmpHandRects = this.initHandRectMaps();
-        this.playerHandRectMap = tmpHandRects.player;
-        this.opponentHandRectMap = tmpHandRects.opponent;
+        this.playerHandBounds = tmpHandRects.player;
+        this.opponentHandBounds = tmpHandRects.opponent;
     }
 
     private initHandRectMaps(): { player: Map<Piecetype, Rect>, opponent: Map<Piecetype, Rect> } {
@@ -177,7 +177,7 @@ export default class GUI {
         this.ctx.textBaseline = 'bottom';
         this.ctx.fillStyle = 'white';
         if (color === this.orientation) {
-            for (let [key, value] of this.playerHandRectMap) {
+            for (let [key, value] of this.playerHandBounds) {
                 let numOfPieces = hand.getNumOfPieces(key);
                     if (numOfPieces === undefined) return;
                 this.ctx.globalAlpha = numOfPieces === 0 ? 0.2 : 1;
@@ -189,7 +189,7 @@ export default class GUI {
                 this.ctx.fillText(numOfPieces.toString(), value.x, value.y + value.height);
             }
         } else {
-            for (let [key, value] of this.opponentHandRectMap) {
+            for (let [key, value] of this.opponentHandBounds) {
                 let numOfPieces = hand.getNumOfPieces(key);
                     if (numOfPieces === undefined) return;
                 this.ctx.globalAlpha = numOfPieces === 0 ? 0.2 : 1;
@@ -302,10 +302,10 @@ export default class GUI {
     public drawHandArrow(arrow: HandArrow) {
         let rect;
         if (arrow.color === this.orientation) {
-            rect = this.playerHandRectMap.get(arrow.piecetype);
+            rect = this.playerHandBounds.get(arrow.piecetype);
         } else {
 
-            rect = this.opponentHandRectMap.get(arrow.piecetype);
+            rect = this.opponentHandBounds.get(arrow.piecetype);
         }
             if (!rect) return false;
             if (!arrow.toSq) return false;
@@ -366,12 +366,12 @@ export default class GUI {
         return this.sqSize;
     }
 
-    public getPlayerHandRectMap() {
-        return this.playerHandRectMap;
+    public getPlayerHandBounds() {
+        return this.playerHandBounds;
     }
 
-    public getOpponentHandRectMap() {
-        return this.opponentHandRectMap;
+    public getOpponentHandBounds() {
+        return this.opponentHandBounds;
     }
 
     public getOrientation() {

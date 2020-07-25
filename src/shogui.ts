@@ -79,6 +79,10 @@ export default class ShoGUI {
 
         this.board.setPosition(sfenBoard);
 
+        if (!sfenHand) {
+            return;
+        }
+
         let amt = 1;
         for (let char of sfenHand) {
             let ptype = sfen2Piecetype(char);
@@ -266,7 +270,7 @@ export default class ShoGUI {
             this.activeSquare = undefined;
         }
 
-        for (let [key, value] of this.gui.getPlayerHandRectMap()) {
+        for (let [key, value] of this.gui.getPlayerHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 let hand = this.handMap.get(this.gui.getOrientation());
                 if (!hand?.getNumOfPieces(key)) {
@@ -277,7 +281,7 @@ export default class ShoGUI {
             }
         }
 
-        for (let [key, value] of this.gui.getOpponentHandRectMap()) {
+        for (let [key, value] of this.gui.getOpponentHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
                 let hand = this.handMap.get(opponentColor);
@@ -353,13 +357,13 @@ export default class ShoGUI {
             this.currentArrow = { style: 'blue', fromSq: clickedSq, toSq: clickedSq };
         }
 
-        for (let [key, value] of this.gui.getPlayerHandRectMap()) {
+        for (let [key, value] of this.gui.getPlayerHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 this.currentArrow = { style: 'black', piecetype: key, color: this.gui.getOrientation() };
             }
         }
 
-        for (let [key, value] of this.gui.getOpponentHandRectMap()) {
+        for (let [key, value] of this.gui.getOpponentHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
                 this.currentArrow = { style: 'black', piecetype: key, color: opponentColor };

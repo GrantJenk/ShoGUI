@@ -9,7 +9,7 @@ export default class Hand {
     }
 
     public empty() {
-        this.pieces.set('pawn', 1);
+        this.pieces.set('pawn', 0);
         this.pieces.set('lance', 0);
         this.pieces.set('knight', 0);
         this.pieces.set('silver', 0);
@@ -43,7 +43,7 @@ export default class Hand {
      * @param num Optional - If not supplied, 1 is the default
      * @returns True if successful, false if not
      */
-    removePiece(piece: Piecetype, num = 1) {
+    public removePiece(piece: Piecetype, num = 1) {
         let curAmount = this.pieces.get(piece);
         if (!curAmount || curAmount <= 0) { 
             return false;

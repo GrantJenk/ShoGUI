@@ -21,7 +21,6 @@ export default class ShoGUI {
     private activeSquare: Square|undefined;
     private highlightList: Highlight[];
     private draggingPiece: DraggingPiece|undefined;
-    private rightClickSq: Square|undefined;
 
     constructor(config: Config) {
         let self = this;
@@ -31,7 +30,6 @@ export default class ShoGUI {
         this.handMap = new Map<Color, Hand>();
         this.handMap.set('black', new Hand());
         this.handMap.set('white', new Hand());
-        //this.board.setStartingPosition();
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = 1350;
@@ -43,37 +41,45 @@ export default class ShoGUI {
 
         this.canvas.addEventListener('mousedown', function(e) {
             self.onMouseDown(e);
-            window.requestAnimationFrame( () => self.drawGame() );
+            window.requestAnimationFrame( () => self.refreshCanvas() );
         });
 
         window.addEventListener('mouseup', function(e) {
             self.onMouseUp(e);
-            window.requestAnimationFrame( () => self.drawGame() );
+            window.requestAnimationFrame( () => self.refreshCanvas() );
         });
 
         window.addEventListener('mousemove', function(e) {
             self.onMouseMove(e);
-            window.requestAnimationFrame( () => self.drawGame() );
+            window.requestAnimationFrame( () => self.refreshCanvas() );
         })
 
         window.addEventListener('keydown', function(e) {
             self.gui.flipBoard();
-            //console.log(self.arrowList);
-            window.requestAnimationFrame( () => self.drawGame() );
+            window.requestAnimationFrame( () => self.refreshCanvas() );
         })
 
         this.canvas.addEventListener('contextmenu', function(e) {
             e.preventDefault();
-            //self.onRightClick(e);
-            //window.requestAnimationFrame( () => self.drawGame() );
         });
 
         document.body.appendChild(this.canvas);
 
         window.onload = function () {
-            window.requestAnimationFrame( () => self.drawGame() );
+            window.requestAnimationFrame( () => self.refreshCanvas() );
         }
     }
+
+    public setPosition(sfen: string) {
+        //TODO: Check for valid sfen
+
+        let sfenArr = sfen.split(' ');
+        let sfenBoard = sfenArr[0];
+        let sfenHand = sfenArr[2];
+
+        this.board.setPosition(sfenBoard);
+    }
+    
 
     public flipBoard() {
         this.gui.flipBoard();
@@ -153,7 +159,7 @@ export default class ShoGUI {
         hand.removePiece(piece.type);
     }
 
-    private drawGame() {
+    private refreshCanvas() {
         this.gui.clearCanvas();
 
         if (this.activeSquare) {

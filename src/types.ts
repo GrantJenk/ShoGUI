@@ -22,7 +22,7 @@ export type File = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export const ranks: Rank[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
 export const files: File[] = [9, 8, 7, 6, 5, 4, 3, 2, 1];
-export const allSquares: Square[] = Array.prototype.concat(...files.map(c => ranks.map(r => c+r)));
+export const allSquares: Square[] = Array.prototype.concat(...ranks.map(r => files.map(c => c+r)));
 
 export type HighlightType = 'fill' | 'outline' | 'circle' | 'hidden'
 

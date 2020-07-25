@@ -1,4 +1,4 @@
-import { Rect, Move, Drop, SquareArrow, HandArrow } from "./types";
+import { Rect, Move, Drop, SquareArrow, HandArrow, Piecetype } from "./types";
 
 /**
  * Determines if something is inside the Rect
@@ -27,6 +27,29 @@ export function arrowsEqual(arrow1: SquareArrow|HandArrow, arrow2: SquareArrow|H
         }
     }
     return false;
+}
+
+export function sfen2Piecetype(sfen: string): Piecetype|undefined {
+    switch (sfen.toUpperCase()) {
+        case 'P':
+            return 'pawn';
+        case 'L':
+            return 'lance';
+        case 'N':
+            return 'knight';
+        case 'S':
+            return 'silver';
+        case 'G':
+            return 'gold';
+        case 'R':
+            return 'rook';
+        case 'B':
+            return 'bishop';
+        case 'K':
+            return 'king';
+        default:
+            return undefined;
+    }
 }
 
 export function isMove(arg: any): arg is Move {

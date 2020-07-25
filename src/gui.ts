@@ -10,7 +10,7 @@ export default class GUI {
     private ctx: CanvasRenderingContext2D;
     private arrowCanvas: HTMLCanvasElement;
     private arrowCtx: CanvasRenderingContext2D;
-    private pieceImageMap: Map<Piecetype, HTMLImageElement>;
+    private pieceImageMap: Map<string, HTMLImageElement>;
     private sqSize: number;
     private boardRect: Rect;
     private playerHandRectMap: Map<Piecetype, Rect>;
@@ -40,20 +40,20 @@ export default class GUI {
         }
 
         // Load images
-        this.pieceImageMap = new Map<Piecetype, HTMLImageElement>();
+        this.pieceImageMap = new Map<string, HTMLImageElement>();
         this.pieceImageMap.set('pawn', new Image());
-        //this.pieceImageMap.set('+pawn', new Image());
+        this.pieceImageMap.set('+pawn', new Image());
         this.pieceImageMap.set('lance', new Image());
-        //this.pieceImageMap.set('+lance', new Image());
+        this.pieceImageMap.set('+lance', new Image());
         this.pieceImageMap.set('knight', new Image());
-        //this.pieceImageMap.set('+knight', new Image());
+        this.pieceImageMap.set('+knight', new Image());
         this.pieceImageMap.set('silver', new Image());
-        //this.pieceImageMap.set('+silver', new Image());
+        this.pieceImageMap.set('+silver', new Image());
         this.pieceImageMap.set('gold', new Image());
         this.pieceImageMap.set('bishop', new Image());
-        //this.pieceImageMap.set('+bishop', new Image());
+        this.pieceImageMap.set('+bishop', new Image());
         this.pieceImageMap.set('rook', new Image());
-        //this.pieceImageMap.set('+rook', new Image());
+        this.pieceImageMap.set('+rook', new Image());
         this.pieceImageMap.set('king', new Image());
 
         for (let [key, value] of this.pieceImageMap) {
@@ -146,9 +146,13 @@ export default class GUI {
     }
 
     public drawPiece(piece: Piece, x: number, y: number) {
-        let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(piece.type);
+        let key: string = piece.type;
+        if (piece.promoted) {
+            key = '+' + key;
+        }
+        let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(key);
         if (!pieceImg) {
-            throw new Error("Failed to load piece image: " + piece.type);
+            throw new Error("Failed to load piece image: " + key);
         }
         if (piece.color === this.orientation) {
             this.ctx.drawImage(pieceImg, x, y, this.sqSize, this.sqSize);
@@ -337,7 +341,7 @@ export default class GUI {
         if (col < 0 || row < 0 || col > 9 - 1 || row > 9 - 1) {
             return undefined;
         }
-        return allSquares[ 9*col + row ];
+        return allSquares[ 9*row + col ];
     }
 
     public square2Pos(sq: Square) {

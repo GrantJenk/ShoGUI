@@ -99,7 +99,6 @@ export default class ShoGUI {
             }
         }
     }
-    
 
     public flipBoard() {
         this.gui.flipBoard();
@@ -237,7 +236,7 @@ export default class ShoGUI {
         let mouseX = event.clientX - rect.left;
         let mouseY = event.clientY - rect.top;
 
-        if (isPosInsideRect(this.gui.getBoardRect(), mouseX, mouseY)) {
+        if (isPosInsideRect(this.gui.getBoardBounds(), mouseX, mouseY)) {
             let clickedSq: Square|undefined = this.gui.pos2Square(mouseX, mouseY);
                 if (!clickedSq) return;
             let piece = this.board.getPiece(clickedSq);
@@ -287,7 +286,7 @@ export default class ShoGUI {
         let mouseX = event.clientX - rect.left;
         let mouseY = event.clientY - rect.top;
 
-        if (isPosInsideRect(this.gui.getBoardRect(), mouseX, mouseY)) {
+        if (isPosInsideRect(this.gui.getBoardBounds(), mouseX, mouseY)) {
             let sqOver = this.gui.pos2Square(mouseX, mouseY);
                 if (!sqOver) return;
             if (this.draggingPiece && this.activeSquare) {

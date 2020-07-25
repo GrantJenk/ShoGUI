@@ -10,7 +10,7 @@ export default class GUI {
     private arrowCtx: CanvasRenderingContext2D;
     private pieceImageMap: Map<string, HTMLImageElement>;
     private sqSize: number;
-    private boardRect: Rect;
+    private boardBounds: Rect;
     private playerHandBounds: Map<Piecetype, Rect>;
     private opponentHandBounds: Map<Piecetype, Rect>;
 
@@ -58,8 +58,8 @@ export default class GUI {
         }
 
         // Setup Rects
-        this.boardRect = { x: this.canvas.width/4, y: 15, width: this.canvas.width/2, height: this.canvas.width/2 };
-        this.sqSize = this.boardRect.width/9;
+        this.boardBounds = { x: this.canvas.width/4, y: 15, width: this.canvas.width/2, height: this.canvas.width/2 };
+        this.sqSize = this.boardBounds.width/9;
 
         // Hand Rects
         let tmpHandRects = this.initHandRectMaps();
@@ -68,7 +68,7 @@ export default class GUI {
     }
 
     private initHandRectMaps(): { player: Map<Piecetype, Rect>, opponent: Map<Piecetype, Rect> } {
-        let padding = this.boardRect.x + this.boardRect.width;
+        let padding = this.boardBounds.x + this.boardBounds.width;
         let sq = this.sqSize;
         let pHandMap = new Map<Piecetype, Rect>();
         let oHandMap = new Map<Piecetype, Rect>();
@@ -105,21 +105,21 @@ export default class GUI {
         this.ctx.lineWidth = 1;
 
         for (let f = 0; f <= 9; f++) {
-            let i = f*this.sqSize + this.boardRect.x;
+            let i = f*this.sqSize + this.boardBounds.x;
 
             this.ctx.beginPath();
-            this.ctx.moveTo(i, this.boardRect.y);
-            this.ctx.lineTo(i, this.boardRect.y + this.boardRect.height);
+            this.ctx.moveTo(i, this.boardBounds.y);
+            this.ctx.lineTo(i, this.boardBounds.y + this.boardBounds.height);
             this.ctx.closePath();
             this.ctx.stroke();
         }
 
         for (let r = 0; r <= 9; r++) {
-            let i = r*this.sqSize + this.boardRect.y;
+            let i = r*this.sqSize + this.boardBounds.y;
 
             this.ctx.beginPath();
-            this.ctx.moveTo(this.boardRect.x, i);
-            this.ctx.lineTo(this.boardRect.x + this.boardRect.width, i);
+            this.ctx.moveTo(this.boardBounds.x, i);
+            this.ctx.lineTo(this.boardBounds.x + this.boardBounds.width, i);
             this.ctx.closePath();
             this.ctx.stroke();
         }
@@ -136,9 +136,9 @@ export default class GUI {
                 label = 8 - i;
             }
             this.ctx.textBaseline = 'middle';
-            this.ctx.fillText( String.fromCharCode(label+1+96), this.boardRect.x + this.boardRect.width + 3, this.boardRect.y + this.sqSize/2+(i*interval) );
+            this.ctx.fillText( String.fromCharCode(label+1+96), this.boardBounds.x + this.boardBounds.width + 3, this.boardBounds.y + this.sqSize/2+(i*interval) );
             this.ctx.textBaseline = 'top';
-            this.ctx.fillText( (10 - (label+1)).toString(), this.boardRect.x + (this.sqSize/2)+(i*interval), 0);
+            this.ctx.fillText( (10 - (label+1)).toString(), this.boardBounds.x + (this.sqSize/2)+(i*interval), 0);
         }
     }
 
@@ -327,8 +327,8 @@ export default class GUI {
     }
 
     public pos2Square(x: number, y: number): Square|undefined {
-        let col = Math.floor( (x - this.boardRect.x)/this.sqSize );
-        let row = Math.floor( (y - this.boardRect.y)/this.sqSize);
+        let col = Math.floor( (x - this.boardBounds.x)/this.sqSize );
+        let row = Math.floor( (y - this.boardBounds.y)/this.sqSize);
         if (this.orientation === 'white') {
             col = 8 - col;
             row = 8 - row;
@@ -346,15 +346,15 @@ export default class GUI {
             col = 8 - col;
             row = 8 - row;
         }
-        let x = this.boardRect.x + (col * this.sqSize);
-        let y = this.boardRect.y + row * this.sqSize;
+        let x = this.boardBounds.x + (col * this.sqSize);
+        let y = this.boardBounds.y + row * this.sqSize;
         let centerX = x + (this.sqSize/2);
         let centerY = y + (this.sqSize/2)
         return { x, y, centerX, centerY };
     }
 
-    public getBoardRect() {
-        return this.boardRect;
+    public getBoardBounds() {
+        return this.boardBounds;
     }
 
     public getSqSize() {

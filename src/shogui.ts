@@ -1,6 +1,6 @@
 import GUI from "./gui";
 import Board from "./board";
-import { Config, Piece, Piecetype, Square, allSquares, Color, SquareArrow, HandArrow, Highlight } from "./types";
+import { Config, Piece, Piecetype, Square, allSquares, Color, Arrow, Highlight } from "./types";
 import { isPosInsideRect, isSquareArrow, isHandArrow, arrowsEqual, sfen2Piecetype } from "./util";
 
 interface DraggingPiece {
@@ -14,8 +14,8 @@ export default class ShoGUI {
     private board: Board;
     private canvas: HTMLCanvasElement;
     private gui: GUI;
-    private currentArrow: SquareArrow|HandArrow|undefined;
-    private arrowList: (SquareArrow|HandArrow)[];
+    private currentArrow: Arrow|undefined;
+    private arrowList: Arrow[];
     private activeSquare: Square|undefined;
     private highlightList: Highlight[];
     private draggingPiece: DraggingPiece|undefined;
@@ -137,13 +137,13 @@ export default class ShoGUI {
         this.highlightList = [];
     }
 
-    public addArrow(arrow: SquareArrow|HandArrow): boolean {
+    public addArrow(arrow: Arrow): boolean {
         if (arrow.toSq === undefined) return false;
         this.arrowList.push(arrow);
         return true;
     }
 
-    public removeArrow(arrow: SquareArrow|HandArrow): boolean {
+    public removeArrow(arrow: Arrow): boolean {
         let i = 0;
         for (let cmpArrow of this.arrowList) {
             if ( arrowsEqual(cmpArrow, arrow) ) {
@@ -187,11 +187,11 @@ export default class ShoGUI {
         this.gui.clearCanvas();
 
         for (let highlight of this.highlightList) {
-            this.gui.highlightSquare(highlight);
+            this.gui.highlightSquare(highlight.style, highlight.type, highlight.sq, highlight.alpha);
         }
 
         if (this.activeSquare) {
-            this.gui.highlightSquare( {style: 'mintcream', type: 'fill', sq:this.activeSquare} );
+            this.gui.highlightSquare('mintcream', 'fill', this.activeSquare);
         }
 
         this.gui.drawBoard();
@@ -224,7 +224,7 @@ export default class ShoGUI {
         this.gui.drawArrowCanvas(0.6);
     }
 
-    private drawArrow(arrow: SquareArrow|HandArrow) {
+    private drawArrow(arrow: Arrow) {
         if ( isSquareArrow(arrow) ) {
             this.gui.drawSquareArrow(arrow);
         } else if ( isHandArrow(arrow) ) {

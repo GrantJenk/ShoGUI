@@ -200,17 +200,17 @@ export default class GUI {
         this.ctx.globalAlpha = 1;
     }
 
-    public highlightSquare(highlight: Highlight): boolean {
-        if (highlight.type === 'hidden') return false;
-        let pos = this.square2Pos(highlight.sq);
+    public highlightSquare(style: string, type: string, sq: Square, alpha?: number): boolean {
+        if (type === 'hidden') return false;
+        let pos = this.square2Pos(sq);
 
         this.ctx.save();
-        this.ctx.fillStyle = highlight.style;
-        this.ctx.strokeStyle = highlight.style;
-        if (highlight.alpha) {
-            this.ctx.globalAlpha = highlight.alpha;
+        this.ctx.fillStyle = style;
+        this.ctx.strokeStyle = style;
+        if (alpha) {
+            this.ctx.globalAlpha = alpha;
         }
-        switch(highlight.type) {
+        switch(type) {
             case 'fill':
                 this.ctx.fillRect(pos.x, pos.y, this.sqSize, this.sqSize);
                 break;

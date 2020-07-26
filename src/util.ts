@@ -1,4 +1,5 @@
-import { Rect, Move, Drop, SquareArrow, HandArrow, Piecetype } from "./types";
+import { Rect, SquareArrow, HandArrow, Piecetype, Arrow } from "./types";
+
 
 /**
  * Determines if something is inside the Rect
@@ -14,7 +15,7 @@ export function isPosInsideRect(rect: Rect, x: number, y: number) {
     return true;
 }
 
-export function arrowsEqual(arrow1: SquareArrow|HandArrow, arrow2: SquareArrow|HandArrow): boolean {
+export function arrowsEqual(arrow1: Arrow, arrow2: Arrow): boolean {
     if ( isSquareArrow(arrow1) && isSquareArrow(arrow2) ) {
         if ( arrow1.toSq === arrow2.toSq && arrow1.fromSq === arrow2.fromSq) {
             return true;
@@ -58,14 +59,6 @@ export function sfen2Piecetype(sfen: string): Piecetype|undefined {
         default:
             return undefined;
     }
-}
-
-export function isMove(arg: any): arg is Move {
-    return arg && arg.src && arg.dest;
-}
-
-export function isDrop(arg: any): arg is Drop {
-    return arg && arg.piece && arg.dest;
 }
 
 export function isSquareArrow(arg: any): arg is SquareArrow {

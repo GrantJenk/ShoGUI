@@ -8,7 +8,7 @@ export default class GUI {
     private ctx: CanvasRenderingContext2D;
     private arrowCanvas: HTMLCanvasElement;
     private arrowCtx: CanvasRenderingContext2D;
-    private pieceImageMap: Map<string, HTMLImageElement>;
+    private imageMap: Map<string, HTMLImageElement>;
     private sqSize: number;
     private boardBounds: Rect;
     private playerHandBounds: Map<Piecetype, Rect>;
@@ -37,23 +37,23 @@ export default class GUI {
         }
 
         // Load images
-        this.pieceImageMap = new Map<string, HTMLImageElement>();
-        this.pieceImageMap.set('pawn', new Image());
-        this.pieceImageMap.set('+pawn', new Image());
-        this.pieceImageMap.set('lance', new Image());
-        this.pieceImageMap.set('+lance', new Image());
-        this.pieceImageMap.set('knight', new Image());
-        this.pieceImageMap.set('+knight', new Image());
-        this.pieceImageMap.set('silver', new Image());
-        this.pieceImageMap.set('+silver', new Image());
-        this.pieceImageMap.set('gold', new Image());
-        this.pieceImageMap.set('bishop', new Image());
-        this.pieceImageMap.set('+bishop', new Image());
-        this.pieceImageMap.set('rook', new Image());
-        this.pieceImageMap.set('+rook', new Image());
-        this.pieceImageMap.set('king', new Image());
+        this.imageMap = new Map<string, HTMLImageElement>();
+        this.imageMap.set('pawn', new Image());
+        this.imageMap.set('+pawn', new Image());
+        this.imageMap.set('lance', new Image());
+        this.imageMap.set('+lance', new Image());
+        this.imageMap.set('knight', new Image());
+        this.imageMap.set('+knight', new Image());
+        this.imageMap.set('silver', new Image());
+        this.imageMap.set('+silver', new Image());
+        this.imageMap.set('gold', new Image());
+        this.imageMap.set('bishop', new Image());
+        this.imageMap.set('+bishop', new Image());
+        this.imageMap.set('rook', new Image());
+        this.imageMap.set('+rook', new Image());
+        this.imageMap.set('king', new Image());
 
-        for (let [key, value] of this.pieceImageMap) {
+        for (let [key, value] of this.imageMap) {
             value.src = '../media/pieces/' + key + '.png';
         }
 
@@ -147,7 +147,7 @@ export default class GUI {
         if (piece.promoted) {
             key = '+' + key;
         }
-        let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(key);
+        let pieceImg: HTMLImageElement|undefined = this.imageMap.get(key);
         if (!pieceImg) {
             throw new Error("Failed to load piece image: " + key);
         }
@@ -176,7 +176,7 @@ export default class GUI {
                 let numOfPieces = this.board.getNumPiecesInHand(color, key);
                     if (numOfPieces === undefined) return;
                 this.ctx.globalAlpha = numOfPieces === 0 ? 0.2 : 1;
-                let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(key);
+                let pieceImg: HTMLImageElement|undefined = this.imageMap.get(key);
                 if (!pieceImg) {
                     throw new Error("Failed to load piece image: " + key);
                 }
@@ -188,7 +188,7 @@ export default class GUI {
                 let numOfPieces = this.board.getNumPiecesInHand(color, key);
                     if (numOfPieces === undefined) return;
                 this.ctx.globalAlpha = numOfPieces === 0 ? 0.2 : 1;
-                let pieceImg: HTMLImageElement|undefined = this.pieceImageMap.get(key);
+                let pieceImg: HTMLImageElement|undefined = this.imageMap.get(key);
                 if (!pieceImg) {
                     throw new Error("Failed to load piece image: " + key);
                 }

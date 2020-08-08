@@ -12,7 +12,6 @@ interface DraggingPiece {
 export default class ShoGUI {
     private config: Config;
     private board: Board;
-    private canvas: HTMLCanvasElement;
     private gui: GUI;
     private currentArrow: Arrow|undefined;
     private arrowList: Arrow[];
@@ -26,15 +25,12 @@ export default class ShoGUI {
 
         this.board = new Board();
 
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = 1350;
-        this.canvas.height = this.canvas.width/2 + 20;
-        this.gui = new GUI(this.board, this.canvas);
+        this.gui = new GUI(this.board);
 
         this.arrowList = [];
         this.highlightList = [];
 
-        this.canvas.addEventListener('mousedown', function(e) {
+        this.gui.getCanvas().addEventListener('mousedown', function(e) {
             self.onMouseDown(e);
             window.requestAnimationFrame( () => self.refreshCanvas() );
         });
@@ -54,11 +50,9 @@ export default class ShoGUI {
             window.requestAnimationFrame( () => self.refreshCanvas() );
         })
 
-        this.canvas.addEventListener('contextmenu', function(e) {
+        this.gui.getCanvas().addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
-
-        document.body.appendChild(this.canvas);
 
         window.onload = function () {
             window.requestAnimationFrame( () => self.refreshCanvas() );
@@ -244,7 +238,7 @@ export default class ShoGUI {
 
         this.clearArrows();
 
-        let rect = this.canvas.getBoundingClientRect();
+        let rect = this.gui.getCanvas().getBoundingClientRect();
         let mouseX = event.clientX - rect.left;
         let mouseY = event.clientY - rect.top;
 
@@ -294,7 +288,7 @@ export default class ShoGUI {
     }
 
     private onMouseUp(event: MouseEvent) {
-        let rect = this.canvas.getBoundingClientRect();
+        let rect = this.gui.getCanvas().getBoundingClientRect();
         let mouseX = event.clientX - rect.left;
         let mouseY = event.clientY - rect.top;
 
@@ -327,7 +321,7 @@ export default class ShoGUI {
     }
 
     private onMouseMove(event: MouseEvent) {
-        let rect = this.canvas.getBoundingClientRect();
+        let rect = this.gui.getCanvas().getBoundingClientRect();
         let mouseX = event.clientX - rect.left;
         let mouseY = event.clientY - rect.top;
         let hoverSq = this.gui.pos2Square(mouseX, mouseY);
@@ -347,7 +341,7 @@ export default class ShoGUI {
     }
 
     private onRightClick(event: MouseEvent) {
-        let rect = this.canvas.getBoundingClientRect();
+        let rect = this.gui.getCanvas().getBoundingClientRect();
         let mouseX = event.clientX - rect.left;
         let mouseY = event.clientY - rect.top;
         let clickedSq = this.gui.pos2Square(mouseX, mouseY);

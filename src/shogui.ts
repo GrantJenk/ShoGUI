@@ -61,37 +61,7 @@ export default class ShoGUI {
 
     public setPosition(sfen: string) {
         //TODO: Check for valid sfen
-
-        let sfenArr = sfen.split(' ');
-        let sfenBoard = sfenArr[0];
-        let sfenHand = sfenArr[2];
-
-        this.board.setPosition(sfenBoard);
-
-        if (!sfenHand) {
-            return;
-        }
-
-        let amt = 1;
-        for (let char of sfenHand) {
-            let ptype = sfen2Piecetype(char);
-            if ( !isNaN(Number(char)) ) {
-                amt = Number(char);
-                continue;
-            } else {
-                if (!ptype) {
-                    throw new Error('ERROR: Cannot get piecetype from sfen character ' + char);
-                }
-
-                if (char.toUpperCase() === char) {
-                    this.board.add2Hand('black', ptype, amt);
-                } else if (char.toLowerCase() === char) {
-                    this.board.add2Hand('white', ptype, amt);
-                }
-
-                amt = 1;
-            }
-        }
+        this.board.setPosition(sfen);
     }
 
     public flipBoard() {

@@ -36,8 +36,12 @@ export default class Board {
      * Sets the board to sfen position
      * @param sfenBoardField - Substring of total SFEN that is soley the Board field
      */
-    public setPosition(sfenBoardField: string) {
-        let rows = sfenBoardField.split('/');
+    public setPosition(sfen: string) {
+        let sfenArr = sfen.split(' ');
+        let sfenBoard = sfenArr[0];
+        let sfenHand = sfenArr[2];
+
+        let rows = sfenBoard.split('/');
         let curSquareIndex = 0;
         let isPromote = false;
 
@@ -59,6 +63,31 @@ export default class Board {
                     curSquareIndex = curSquareIndex + Number(char);
                 }
                 isPromote = false;
+            }
+        }
+
+        if (!sfenHand) {
+            return;
+        }
+
+        let amt = 1;
+        for (let char of sfenHand) {
+            let ptype = sfen2Piecetype(char);
+            if ( !isNaN(Number(char)) ) {
+                amt = Number(char);
+                continue;
+            } else {
+                if (!ptype) {
+                    throw new Error('ERROR: Cannot get piecetype from sfen character ' + char);
+                }
+
+                if (char.toUpperCase() === char) {
+                    this.add2Hand('black', ptype, amt);
+                } else if (char.toLowerCase() === char) {
+                    this.add2Hand('white', ptype, amt);
+                }
+
+                amt = 1;
             }
         }
     }

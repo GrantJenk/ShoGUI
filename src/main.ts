@@ -7,6 +7,7 @@ shogui.setPosition('lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b 
 
 function myPieceMove(srcSq: Square, destSq: Square) {
     shogui.clearHighlights();
+    //shogui.clearArrows();
     shogui.addHighlight({style: 'lightgrey', type: 'fill', sq: srcSq, });
     shogui.addHighlight({style: 'lightgrey', type: 'fill', sq: destSq, });
     //shogui.addArrow({style: 'black', fromSq: srcSq, toSq: destSq});

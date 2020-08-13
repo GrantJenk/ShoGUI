@@ -1,62 +1,26 @@
 import GUI from "./gui";
 import Board from "./board";
-import { Config, Piece, Piecetype, Square, allSquares, Color, Arrow, Highlight } from "./types";
-import { isPosInsideRect, isSquareArrow, isHandArrow, arrowsEqual, sfen2Piecetype } from "./util";
-
-interface DraggingPiece {
-    piece: Piece,
-    x: number,
-    y: number
-}
+import { Config, Piecetype, Square, allSquares, Color, Arrow, Highlight } from "./types";
+import { isSquareArrow, isHandArrow, arrowsEqual } from "./util";
+import Input from "./input";
 
 export default class ShoGUI {
     private config: Config;
     private board: Board;
     private gui: GUI;
-    private currentArrow: Arrow|undefined;
-    private arrowList: Arrow[];
-    private activeSquare: Square|undefined;
+    private input: Input;
     private highlightList: Highlight[];
-    private draggingPiece: DraggingPiece|undefined;
+    private arrowList: Arrow[];
 
     constructor(config: Config) {
-        let self = this;
         this.config = config;
 
         this.board = new Board();
-
         this.gui = new GUI(this.board);
+        this.input = new Input(this);
 
-        this.arrowList = [];
         this.highlightList = [];
-
-        this.gui.getCanvas().addEventListener('mousedown', function(e) {
-            self.onMouseDown(e);
-            window.requestAnimationFrame( () => self.refreshCanvas() );
-        });
-
-        window.addEventListener('mouseup', function(e) {
-            self.onMouseUp(e);
-            window.requestAnimationFrame( () => self.refreshCanvas() );
-        });
-
-        window.addEventListener('mousemove', function(e) {
-            self.onMouseMove(e);
-            window.requestAnimationFrame( () => self.refreshCanvas() );
-        })
-
-        window.addEventListener('keydown', function(e) {
-            self.gui.flipBoard();
-            window.requestAnimationFrame( () => self.refreshCanvas() );
-        })
-
-        this.gui.getCanvas().addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-
-        window.onload = function () {
-            window.requestAnimationFrame( () => self.refreshCanvas() );
-        }
+        this.arrowList = [];
     }
 
     public setPosition(sfen: string) {
@@ -123,7 +87,7 @@ export default class ShoGUI {
         this.arrowList = [];
     }
 
-    private movePiece(srcSq: Square, destSq: Square) {
+    public movePiece(srcSq: Square, destSq: Square) {
         let success = true;
 
         if (typeof this.config.onMovePiece === "function") {
@@ -147,23 +111,26 @@ export default class ShoGUI {
         }
     }
 
-    private refreshCanvas() {
+    public refreshCanvas() {
+        let activeSquare = this.input.getActiveSquare();
+        let draggingPiece = this.input.getDraggingPiece();
+        let currentArrow = this.input.getCurrentArrow();
         this.gui.clearCanvas();
 
         for (let highlight of this.highlightList) {
             this.gui.highlightSquare(highlight.style, highlight.type, highlight.sq, highlight.alpha);
         }
 
-        if (this.activeSquare) {
-            this.gui.highlightSquare('mintcream', 'fill', this.activeSquare);
+        if (activeSquare) {
+            this.gui.highlightSquare('mintcream', 'fill', activeSquare);
         }
 
         this.gui.drawBoard();
         this.gui.drawFileRankLabels();
 
         for (let i of allSquares) {
-            if (this.activeSquare && this.draggingPiece) { // Don't draw the currently dragging piece on its square
-                if (this.activeSquare === i) {
+            if (activeSquare && draggingPiece) { // Don't draw the currently dragging piece on its square
+                if (activeSquare === i) {
                     continue;
                 }
             }
@@ -173,17 +140,21 @@ export default class ShoGUI {
         this.gui.drawHand('black'); 
         this.gui.drawHand('white');
 
-        if (this.draggingPiece) {
-            this.gui.drawPiece(this.draggingPiece.piece, this.draggingPiece.x - this.gui.getSqSize()/2, this.draggingPiece.y - this.gui.getSqSize()/2);
+        if (draggingPiece) {
+            this.gui.drawPiece(draggingPiece.piece, draggingPiece.x - this.gui.getSqSize()/2, draggingPiece.y - this.gui.getSqSize()/2);
         }
 
-        if (this.currentArrow) {
-           this.drawArrow(this.currentArrow);
+        if (currentArrow) {
+           this.drawArrow(currentArrow);
         }
 
-        for (let arrow of this.arrowList) {
+        for ( let arrow of this.input.getUserArrows() ) { // Draw user input arrows
            this.drawArrow(arrow);
         }
+
+        for ( let arrow of this.arrowList ) { // Draw programmatically-added arrows
+            this.drawArrow(arrow);
+         }
 
         this.gui.drawArrowCanvas(0.6);
     }
@@ -196,144 +167,11 @@ export default class ShoGUI {
         }
     }
 
-    private onMouseDown(event: MouseEvent) {
-        if (event.button === 2) {
-            this.onRightClick(event);
-            return;
-        }
-
-        if (event.button !== 0) {
-            return;
-        }
-
-        this.clearArrows();
-
-        let rect = this.gui.getCanvas().getBoundingClientRect();
-        let mouseX = event.clientX - rect.left;
-        let mouseY = event.clientY - rect.top;
-
-        if (isPosInsideRect(this.gui.getBoardBounds(), mouseX, mouseY)) {
-            let clickedSq: Square|undefined = this.gui.pos2Square(mouseX, mouseY);
-                if (!clickedSq) return;
-            let piece = this.board.getPiece(clickedSq);
-            
-            if (piece && (!this.activeSquare || this.activeSquare === clickedSq)) {
-                this.activeSquare = clickedSq;
-                this.draggingPiece = {piece: piece, x: mouseX, y: mouseY};
-            } else {
-                if (this.activeSquare) {
-                    if (this.activeSquare !== clickedSq) {
-                        this.movePiece(this.activeSquare, clickedSq);
-                        this.activeSquare = undefined;
-                    }
-                }
-            }
-        } else {
-            this.draggingPiece = undefined;
-            this.activeSquare = undefined;
-        }
-
-        for (let [key, value] of this.gui.getPlayerHandBounds()) {
-            if (isPosInsideRect(value, mouseX, mouseY)) {
-                let numPieces = this.board.getNumPiecesInHand(this.gui.getOrientation(), key);
-                if (!numPieces || numPieces <= 0) {
-                    return;
-                }
-                let piece = {type: key, color: this.gui.getOrientation()};
-                this.draggingPiece = {piece: piece, x: mouseX, y: mouseY};
-            }
-        }
-
-        for (let [key, value] of this.gui.getOpponentHandBounds()) {
-            if (isPosInsideRect(value, mouseX, mouseY)) {
-                let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
-                let numPieces = this.board.getNumPiecesInHand(opponentColor, key);
-                if (!numPieces || numPieces <= 0) {
-                    return;
-                }
-                let piece = {type: key, color: opponentColor};
-                this.draggingPiece = {piece: piece, x: mouseX, y: mouseY};
-            }
-        }
+    public getBoard() {
+        return this.board;
     }
 
-    private onMouseUp(event: MouseEvent) {
-        let rect = this.gui.getCanvas().getBoundingClientRect();
-        let mouseX = event.clientX - rect.left;
-        let mouseY = event.clientY - rect.top;
-
-        if (isPosInsideRect(this.gui.getBoardBounds(), mouseX, mouseY)) {
-            let sqOver = this.gui.pos2Square(mouseX, mouseY);
-                if (!sqOver) return;
-            if (this.draggingPiece && this.activeSquare) {
-                if (this.activeSquare === sqOver) {
-                    this.draggingPiece = undefined;
-                } else {
-                    this.movePiece(this.activeSquare, sqOver);
-                    this.activeSquare = undefined;
-                }
-            } else if (this.draggingPiece && !this.activeSquare) {
-                this.dropPiece(this.draggingPiece.piece.color, this.draggingPiece.piece.type, sqOver);
-            }
-        } else {
-            this.activeSquare = undefined;
-        }
-        this.draggingPiece = undefined;
-
-        if (event.button === 2) { // Right mouse button
-            if (this.currentArrow) {
-                if ( !this.removeArrow(this.currentArrow) ) {
-                    this.addArrow(this.currentArrow);
-                }
-            }
-            this.currentArrow = undefined;
-        }
-    }
-
-    private onMouseMove(event: MouseEvent) {
-        let rect = this.gui.getCanvas().getBoundingClientRect();
-        let mouseX = event.clientX - rect.left;
-        let mouseY = event.clientY - rect.top;
-        let hoverSq = this.gui.pos2Square(mouseX, mouseY);
-
-        if ( this.draggingPiece) {
-            this.draggingPiece.x = mouseX;
-            this.draggingPiece.y = mouseY;
-        }
-
-        if (this.currentArrow) {
-            if (hoverSq) {
-                this.currentArrow.toSq = hoverSq;
-            } else {
-                this.currentArrow.toSq = undefined;
-            }
-        }
-    }
-
-    private onRightClick(event: MouseEvent) {
-        let rect = this.gui.getCanvas().getBoundingClientRect();
-        let mouseX = event.clientX - rect.left;
-        let mouseY = event.clientY - rect.top;
-        let clickedSq = this.gui.pos2Square(mouseX, mouseY);
-
-        if (clickedSq && !this.draggingPiece) {
-            this.currentArrow = { style: 'blue', fromSq: clickedSq, toSq: clickedSq };
-        }
-
-        for (let [key, value] of this.gui.getPlayerHandBounds()) {
-            if (isPosInsideRect(value, mouseX, mouseY)) {
-                this.currentArrow = { style: 'black', piecetype: key, color: this.gui.getOrientation() };
-            }
-        }
-
-        for (let [key, value] of this.gui.getOpponentHandBounds()) {
-            if (isPosInsideRect(value, mouseX, mouseY)) {
-                let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
-                this.currentArrow = { style: 'black', piecetype: key, color: opponentColor };
-            }
-        }
-
-        this.draggingPiece = undefined;
-        this.activeSquare = undefined;
+    public getGui() {
+        return this.gui;
     }
 }

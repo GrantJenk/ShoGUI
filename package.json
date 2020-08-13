@@ -2,14 +2,17 @@
   "name": "shogui",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/shogui.js",
+  "main": "dist/shogui.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "files": [
+    "./src/*.ts"
+  ],
+  "author": "Grant Jenkins",
   "license": "ISC",
   "devDependencies": {
-    "browserify": "^16.5.1",
+    "browserify": "^16.5.2",
     "gulp": "^4.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "tsify": "^4.0.1",

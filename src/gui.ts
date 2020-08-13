@@ -1,4 +1,4 @@
-import { Color, Piece, Piecetype, Rect, Square, allSquares, SquareArrow, HandArrow, Highlight } from "./types";
+import { Color, Piece, Piecetype, Rect, Square, allSquares, SquareArrow, HandArrow } from "./types";
 import Board from "./board";
 
 export default class GUI {

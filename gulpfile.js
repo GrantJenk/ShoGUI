@@ -7,7 +7,8 @@ gulp.task('default', function () {
     return browserify({
         basedir: '.',
         debug: true,
-        entries: ['src/main.ts'],
+        entries: ['src/index.js'],
+        standalone: 'ShoGUI',
         cache: {},
         packageCache: {}
     })

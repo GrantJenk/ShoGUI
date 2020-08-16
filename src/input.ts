@@ -1,4 +1,4 @@
-import ShoGUI from "./shogui";
+import { ShoGUI } from "./shogui";
 import Board from "./board";
 import GUI from "./gui";
 import { Arrow, Square, Piece, Color } from "./types";
@@ -53,9 +53,7 @@ export default class Input {
             e.preventDefault();
         });
 
-        window.onload = function () {
-            window.requestAnimationFrame( () => shogui.refreshCanvas() );
-        }
+        window.addEventListener('load', () => window.requestAnimationFrame( () => shogui.refreshCanvas() ) );
     }
 
     public getActiveSquare() {

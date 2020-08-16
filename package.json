@@ -2,12 +2,15 @@
   "name": "shogui",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/shogui.js",
+  "main": "shogui.js",
+  "typings": "shogui.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "files": [
-    "./src/*.ts"
+    "/*.js",
+    "/*.d.ts",
+    "/src/*.ts"
   ],
   "author": "Grant Jenkins",
   "license": "ISC",

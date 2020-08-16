@@ -4,7 +4,7 @@ import { Config, Piecetype, Square, allSquares, Color, Arrow, Highlight } from "
 import { isSquareArrow, isHandArrow, arrowsEqual } from "./util";
 import Input from "./input";
 
-export default class ShoGUI {
+export class ShoGUI {
     private config: Config;
     private board: Board;
     private gui: GUI;

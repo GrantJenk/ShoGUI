@@ -56,7 +56,8 @@ export default class GUI {
         this.imageMap.set('king', new Image());
 
         for (let [key, value] of this.imageMap) {
-            value.src = '../media/pieces/' + key + '.png';
+            //value.src = '../media/pieces/' + key + '.png';
+            value.src = 'https://raw.githubusercontent.com/gsj285/ShoGUI/master/media/pieces/' + key + '.png'
         }
 
         // Setup Rects

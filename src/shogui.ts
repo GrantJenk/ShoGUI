@@ -175,3 +175,5 @@ export class ShoGUI {
         return this.gui;
     }
 }
+
+module.exports = require('./shogui').ShoGUI;

@@ -5,16 +5,13 @@ import { isSquareArrow, isHandArrow, arrowsEqual } from "./util";
 import Input from "./input";
 
 export class ShoGUI {
-    private config: Config;
     private board: Board;
     private gui: GUI;
     private input: Input;
     private highlightList: Highlight[];
     private arrowList: Arrow[];
 
-    constructor(config: Config) {
-        this.config = config;
-
+    constructor(private config: Config) {
         this.board = new Board();
         this.gui = new GUI(this.board);
         this.input = new Input(this);

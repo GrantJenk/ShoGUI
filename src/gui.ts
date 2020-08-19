@@ -2,7 +2,6 @@ import { Color, Piece, Piecetype, Rect, Square, allSquares, SquareArrow, HandArr
 import Board from "./board";
 
 export default class GUI {
-    private board: Board;
     private orientation: Color;
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
@@ -14,8 +13,7 @@ export default class GUI {
     private playerHandBounds: Map<Piecetype, Rect>;
     private opponentHandBounds: Map<Piecetype, Rect>;
 
-    constructor(board: Board) {
-        this.board = board;
+    constructor(private board: Board) {
         this.orientation = 'black';
 
         this.canvas = document.createElement('canvas');

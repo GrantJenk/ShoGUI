@@ -11,7 +11,6 @@ interface DraggingPiece {
 }
 
 export default class Input {
-    private shogui: ShoGUI;
     private board: Board;
     private gui: GUI;
     
@@ -20,10 +19,9 @@ export default class Input {
     private activeSquare: Square|undefined;
     private draggingPiece: DraggingPiece|undefined;
 
-    constructor(shogui: ShoGUI) {
+    constructor(private shogui: ShoGUI) {
         let self = this;
 
-        this.shogui = shogui;
         this.board = shogui.getBoard();
         this.gui = shogui.getGui();
 

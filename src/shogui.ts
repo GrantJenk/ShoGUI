@@ -173,4 +173,4 @@ export class ShoGUI {
     }
 }
 
-module.exports = require('./shogui').ShoGUI;
+module.exports = ShoGUI;

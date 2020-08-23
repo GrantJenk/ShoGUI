@@ -21,8 +21,11 @@ export class ShoGUI {
     }
 
     public setPosition(sfen: string) {
-        //TODO: Check for valid sfen
         this.board.setPosition(sfen);
+    }
+
+    public getPosition() {
+        return this.board.getPosition();
     }
 
     public flipBoard() {

@@ -1,5 +1,5 @@
 import { Piece, Piecetype, Square, Color, allSquares } from "./types";
-import { sfen2Piecetype } from "./util";
+import { sfen2Piecetype, piece2sfen, validSfen } from "./util";
 
 export default class Board {
     private pieceList: Map<Square, Piece>;
@@ -34,9 +34,12 @@ export default class Board {
 
     /** 
      * Sets the board to sfen position
-     * @param sfenBoardField - Substring of total SFEN that is soley the Board field
+     * @param sfen - sfen string
      */
-    public setPosition(sfen: string) {
+    public setPosition(sfen: string): boolean {
+        if (!validSfen(sfen)) {
+            return false;
+        }
         let sfenArr = sfen.split(' ');
         let sfenBoard = sfenArr[0];
         let sfenHand = sfenArr[2];
@@ -66,30 +69,64 @@ export default class Board {
             }
         }
 
-        if (!sfenHand) {
-            return;
-        }
+        if (sfenHand) {
+            let amt = 1;
+            for (let char of sfenHand) {
+                let ptype = sfen2Piecetype(char);
+                if ( !isNaN(Number(char)) ) {
+                    amt = Number(char);
+                    continue;
+                } else {
+                    if (!ptype) {
+                        throw new Error('ERROR: Cannot get piecetype from sfen character ' + char);
+                    }
 
-        let amt = 1;
-        for (let char of sfenHand) {
-            let ptype = sfen2Piecetype(char);
-            if ( !isNaN(Number(char)) ) {
-                amt = Number(char);
-                continue;
-            } else {
-                if (!ptype) {
-                    throw new Error('ERROR: Cannot get piecetype from sfen character ' + char);
+                    if (char.toUpperCase() === char) {
+                        this.add2Hand('black', ptype, amt);
+                    } else if (char.toLowerCase() === char) {
+                        this.add2Hand('white', ptype, amt);
+                    }
+
+                    amt = 1;
                 }
-
-                if (char.toUpperCase() === char) {
-                    this.add2Hand('black', ptype, amt);
-                } else if (char.toLowerCase() === char) {
-                    this.add2Hand('white', ptype, amt);
-                }
-
-                amt = 1;
             }
         }
+        return true;
+    }
+
+    /** 
+     * Gets the board's SFEN position
+     * TODO: Add hand substring of sfen
+     */
+    public getPosition(): string {
+        let sfen = '';
+        let numEmptySpaces = 0;
+
+        for (let curSq of allSquares) {
+            let piece = this.pieceList.get(curSq);
+
+            if (piece) {
+                if (numEmptySpaces !== 0) {
+                    sfen += numEmptySpaces.toString();
+                }
+                sfen += piece2sfen(piece);
+                numEmptySpaces = 0;
+            } else {
+                numEmptySpaces++;
+            }
+
+            if (curSq[0] === '1') {
+                if (numEmptySpaces !== 0) {
+                    sfen += numEmptySpaces.toString();
+                }
+                numEmptySpaces = 0;
+                if (curSq !== allSquares[allSquares.length - 1]) {
+                    sfen += '/';
+                }
+            }
+        }
+
+        return sfen;
     }
 
     public movePiece(fromSq: Square, toSq: Square): boolean {

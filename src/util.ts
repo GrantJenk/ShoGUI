@@ -1,6 +1,4 @@
-import { Rect, SquareArrow, HandArrow, Piecetype, Arrow, Piece } from "./types";
-import { count } from "console";
-
+import { Rect, Piecetype, Arrow, Piece, HandPiece } from "./types";
 
 /**
  * Determines if something is inside the Rect
@@ -17,16 +15,11 @@ export function isPosInsideRect(rect: Rect, x: number, y: number) {
 }
 
 export function arrowsEqual(arrow1: Arrow, arrow2: Arrow): boolean {
-    if ( isSquareArrow(arrow1) && isSquareArrow(arrow2) ) {
-        if ( arrow1.toSq === arrow2.toSq && arrow1.fromSq === arrow2.fromSq) {
+    if (typeof arrow1.src === 'string' && typeof arrow2.src === 'string') {
+        if (arrow1.src === arrow2.src && arrow1.dest === arrow2.dest) return true;
+    } else if (typeof arrow1.src !== 'string' && typeof arrow2.src !== 'string') {
+        if (arrow1.src.color === arrow2.src.color && arrow1.src.type === arrow2.src.type && arrow1.dest === arrow2.dest)
             return true;
-        }
-    } else if ( isHandArrow(arrow1) && isHandArrow(arrow2) ) {
-        if (arrow1.piecetype === arrow2.piecetype && arrow1.color === arrow2.color) {
-            if ( arrow1.toSq && arrow2.toSq && arrow1.toSq === arrow2.toSq) {
-                return true;
-            }
-        }
     }
     return false;
 }
@@ -118,12 +111,4 @@ export function sfen2Piecetype(sfen: string): Piecetype|undefined {
         default:
             return undefined;
     }
-}
-
-export function isSquareArrow(arg: any): arg is SquareArrow {
-    return arg && arg.style && arg.fromSq && arg.toSq;
-}
-
-export function isHandArrow(arg: any): arg is HandArrow {
-    return arg && arg.style && arg.piecetype && arg.color && arg.toSq;
 }

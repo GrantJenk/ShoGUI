@@ -1,7 +1,7 @@
 import GUI from "./gui";
 import Board from "./board";
 import { Config, Piecetype, Square, allSquares, Color, Arrow, Highlight } from "./types";
-import { isSquareArrow, isHandArrow, arrowsEqual } from "./util";
+import { arrowsEqual } from "./util";
 import Input from "./input";
 
 export class ShoGUI {
@@ -66,7 +66,7 @@ export class ShoGUI {
     }
 
     public addArrow(arrow: Arrow): boolean {
-        if (arrow.toSq === undefined) return false;
+        if (arrow.dest === undefined) return false;
         this.arrowList.push(arrow);
         return true;
     }
@@ -160,11 +160,7 @@ export class ShoGUI {
     }
 
     private drawArrow(arrow: Arrow) {
-        if ( isSquareArrow(arrow) ) {
-            this.gui.drawSquareArrow(arrow);
-        } else if ( isHandArrow(arrow) ) {
-            this.gui.drawHandArrow(arrow);
-        }
+        this.gui.drawSnapArrow(arrow);
     }
 
     public getBoard() {

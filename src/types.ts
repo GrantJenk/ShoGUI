@@ -26,12 +26,15 @@ export const files: File[] = [9, 8, 7, 6, 5, 4, 3, 2, 1];
 export const allSquares: Square[] = Array.prototype.concat(...ranks.map(r => files.map(c => c+r)));
 
 export type HighlightType = 'fill' | 'outline' | 'circle' | 'hidden'
-export type Arrow = SquareArrow | HandArrow;
 
 export interface Piece {
     type: Piecetype,
     color: Color,
     promoted?: boolean
+}
+export interface HandPiece {
+    type: Piecetype,
+    color: Color,
 }
 export interface Rect {
     x: number,
@@ -39,16 +42,10 @@ export interface Rect {
     width: number,
     height: number
 }
-export interface SquareArrow { // Arrow going from one board square to another
-    style: string,
-    fromSq: Square,
-    toSq: Square
-}
-export interface HandArrow { // Arrow going from a piece in hand to a board square
-    style: string,
-    piecetype: Piecetype,
-    color: Color,
-    toSq?: Square
+export interface Arrow {
+    style: string;
+    src: Square|HandPiece,
+    dest?: Square
 }
 export interface Highlight {
     style: string,

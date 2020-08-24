@@ -197,9 +197,9 @@ export default class Input {
 
         if (this.currentArrow) {
             if (hoverSq) {
-                this.currentArrow.toSq = hoverSq;
+                this.currentArrow.dest = hoverSq;
             } else {
-                this.currentArrow.toSq = undefined;
+                this.currentArrow.dest = undefined;
             }
         }
     }
@@ -211,19 +211,19 @@ export default class Input {
         let clickedSq = this.gui.pos2Square(mouseX, mouseY);
 
         if (clickedSq && !this.draggingPiece) {
-            this.currentArrow = { style: 'blue', fromSq: clickedSq, toSq: clickedSq };
+            this.currentArrow = { style: 'blue', src: clickedSq, dest: clickedSq };
         }
 
         for (let [key, value] of this.gui.getPlayerHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
-                this.currentArrow = { style: 'black', piecetype: key, color: this.gui.getOrientation() };
+                this.currentArrow = { style: 'black', src: {type: key, color: this.gui.getOrientation()} };
             }
         }
 
         for (let [key, value] of this.gui.getOpponentHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
-                this.currentArrow = { style: 'black', piecetype: key, color: opponentColor };
+                this.currentArrow = { style: 'black', src: {type: key, color: opponentColor} };
             }
         }
 

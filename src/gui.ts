@@ -1,4 +1,4 @@
-import { Color, Piece, Piecetype, Rect, Square, allSquares, SquareArrow, HandArrow } from "./types";
+import { Color, Piece, Piecetype, Rect, Square, allSquares, Arrow, HandPiece } from "./types";
 import Board from "./board";
 
 export default class GUI {
@@ -282,34 +282,40 @@ export default class GUI {
         this.arrowCtx.restore();
     }
 
-    public drawSquareArrow(arrow: SquareArrow) {
-        let toSqPos = this.square2Pos(arrow.toSq);
-        let fromSqPos = this.square2Pos(arrow.fromSq);
+    /**
+     * Draw an arrow that snaps to board squares or hand pieces
+     * @param arrow 
+     */
+    public drawSnapArrow(arrow: Arrow) {
+        if (!arrow.dest) return false;
 
-        if (arrow.toSq !== arrow.fromSq) {
-            this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
-        } else {
-            this.arrowCtx.strokeStyle = arrow.style;
-            this.arrowCtx.lineWidth = this.canvas.width/500;
-            this.arrowCtx.beginPath();
-            this.arrowCtx.arc(toSqPos.centerX, toSqPos.centerY, this.sqSize/2 - 4, 0, 2 * Math.PI);
-            this.arrowCtx.stroke();
-        }
-    }
+        if (typeof arrow.src === 'string') { // Arrow is a SquareArrow
+            let fromSqPos = this.square2Pos(arrow.src);
 
-    public drawHandArrow(arrow: HandArrow) {
-        let rect;
-        if (arrow.color === this.orientation) {
-            rect = this.playerHandBounds.get(arrow.piecetype);
-        } else {
+            if (arrow.dest === arrow.src) { 
+                this.arrowCtx.strokeStyle = arrow.style;
+                this.arrowCtx.lineWidth = this.canvas.width/500;
+                this.arrowCtx.beginPath();
+                this.arrowCtx.arc(fromSqPos.centerX, fromSqPos.centerY, this.sqSize/2 - 4, 0, 2 * Math.PI);
+                this.arrowCtx.stroke();
+            } else {
+                let toSqPos = this.square2Pos(arrow.dest);
+                this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+            }
+        } else { // Arrow is a HandArrow
+            let rect;
+            let handPiece = arrow.src;
+            if (handPiece.color === this.orientation) {
+                rect = this.playerHandBounds.get(handPiece.type);
+            } else {
 
-            rect = this.opponentHandBounds.get(arrow.piecetype);
-        }
+                rect = this.opponentHandBounds.get(handPiece.type);
+            }
             if (!rect) return false;
-            if (!arrow.toSq) return false;
-        let toSqPos = this.square2Pos(arrow.toSq);
+            let toSqPos = this.square2Pos(arrow.dest);
 
-        this.drawArrow(arrow.style, rect.x+(rect.width/2), rect.y+(rect.height/2), toSqPos.centerX, toSqPos.centerY);
+            this.drawArrow(arrow.style, rect.x+(rect.width/2), rect.y+(rect.height/2), toSqPos.centerX, toSqPos.centerY);
+        }
     }
 
     public drawArrowCanvas(alpha: number) {

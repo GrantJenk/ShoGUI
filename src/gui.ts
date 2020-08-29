@@ -1,4 +1,4 @@
-import { Color, Piece, Piecetype, Rect, Square, allSquares, Arrow, HandPiece } from "./types";
+import { Color, Piece, Piecetype, Rect, Square, allSquares, Arrow } from "./types";
 import Board from "./board";
 
 export default class GUI {
@@ -243,10 +243,10 @@ export default class GUI {
         return true;
     }
 
-    public drawArrow(style: string, fromx: number, fromy: number, tox: number, toy: number) {
+    public drawArrow(style: string, size: number, fromx: number, fromy: number, tox: number, toy: number) {
         this.arrowCtx.save();
         let angle = Math.atan2(toy - fromy, tox - fromx);
-        let radius = this.arrowCanvas.width/40;
+        let radius = size*(this.arrowCanvas.width/150);
         let x = tox - radius * Math.cos(angle);
         let y = toy - radius * Math.sin(angle);
  
@@ -294,13 +294,13 @@ export default class GUI {
 
             if (arrow.dest === arrow.src) { 
                 this.arrowCtx.strokeStyle = arrow.style;
-                this.arrowCtx.lineWidth = this.canvas.width/500;
+                this.arrowCtx.lineWidth = arrow.size*this.canvas.width/1750;
                 this.arrowCtx.beginPath();
                 this.arrowCtx.arc(fromSqPos.centerX, fromSqPos.centerY, this.sqSize/2 - 4, 0, 2 * Math.PI);
                 this.arrowCtx.stroke();
             } else {
                 let toSqPos = this.square2Pos(arrow.dest);
-                this.drawArrow(arrow.style, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
+                this.drawArrow(arrow.style, arrow.size, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
             }
         } else { // Arrow is a HandArrow
             let rect;
@@ -314,7 +314,7 @@ export default class GUI {
             if (!rect) return false;
             let toSqPos = this.square2Pos(arrow.dest);
 
-            this.drawArrow(arrow.style, rect.x+(rect.width/2), rect.y+(rect.height/2), toSqPos.centerX, toSqPos.centerY);
+            this.drawArrow(arrow.style, arrow.size, rect.x+(rect.width/2), rect.y+(rect.height/2), toSqPos.centerX, toSqPos.centerY);
         }
     }
 

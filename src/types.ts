@@ -44,6 +44,7 @@ export interface Rect {
 }
 export interface Arrow {
     style: string;
+    size: number,
     src: Square|HandPiece,
     dest?: Square
 }

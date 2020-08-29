@@ -177,6 +177,7 @@ export default class Input {
         if (event.button === 2) { // Right mouse button
             if (this.currentArrow) {
                 if ( !this.removeArrow(this.currentArrow) ) {
+                    this.currentArrow.size += 0.5;
                     this.addArrow(this.currentArrow);
                 }
             }
@@ -211,19 +212,19 @@ export default class Input {
         let clickedSq = this.gui.pos2Square(mouseX, mouseY);
 
         if (clickedSq && !this.draggingPiece) {
-            this.currentArrow = { style: 'blue', src: clickedSq, dest: clickedSq };
+            this.currentArrow = { style: 'blue', size: 3.5, src: clickedSq, dest: clickedSq };
         }
 
         for (let [key, value] of this.gui.getPlayerHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
-                this.currentArrow = { style: 'black', src: {type: key, color: this.gui.getOrientation()} };
+                this.currentArrow = { style: 'black', size: 3.5, src: {type: key, color: this.gui.getOrientation()} };
             }
         }
 
         for (let [key, value] of this.gui.getOpponentHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
-                this.currentArrow = { style: 'black', src: {type: key, color: opponentColor} };
+                this.currentArrow = { style: 'black', size: 3.5, src: {type: key, color: opponentColor} };
             }
         }
 

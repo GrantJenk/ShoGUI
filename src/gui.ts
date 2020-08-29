@@ -1,4 +1,4 @@
-import { Color, Piece, Piecetype, Rect, Square, allSquares, Arrow } from "./types";
+import { Color, Piece, Piecetype, Rect, Square, allSquares, Arrow, Config } from "./types";
 import Board from "./board";
 
 export default class GUI {
@@ -13,8 +13,11 @@ export default class GUI {
     private playerHandBounds: Map<Piecetype, Rect>;
     private opponentHandBounds: Map<Piecetype, Rect>;
 
-    constructor(private board: Board) {
+    constructor(private board: Board, private config: Config) {
         this.orientation = 'black';
+        if (config.orientation === 'white') {
+            this.orientation = 'white';
+        }
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = 1350;

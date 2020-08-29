@@ -1,4 +1,4 @@
-import { Rect, Piecetype, Arrow, Piece, HandPiece } from "./types";
+import { Rect, Piecetype, Arrow, Piece } from "./types";
 
 /**
  * Determines if something is inside the Rect

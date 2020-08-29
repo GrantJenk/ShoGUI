@@ -13,7 +13,7 @@ export class ShoGUI {
 
     constructor(private config: Config) {
         this.board = new Board();
-        this.gui = new GUI(this.board);
+        this.gui = new GUI(this.board, config);
         this.input = new Input(this);
 
         this.highlightList = [];

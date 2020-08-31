@@ -1,5 +1,8 @@
 export interface Config {
     orientation?: Color,
+    arrowStyle?: string,
+    altArrowStyle?: string,
+    ctrlArrowStyle?: string,
     onMovePiece?: (...args: Square[]) => boolean,
     onDropPiece?: (color: Color, piecetype: Piecetype, sq: Square) => boolean,
     onSelectPiece?: (piece: Piece, sq: Square) => boolean,

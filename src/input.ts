@@ -1,7 +1,7 @@
 import { ShoGUI } from "./shogui";
 import Board from "./board";
 import GUI from "./gui";
-import { Arrow, Square, Piece, Color } from "./types";
+import { Config, Arrow, Square, Piece, Color } from "./types";
 import { isPosInsideRect, arrowsEqual } from "./util";
 
 interface DraggingPiece {
@@ -19,7 +19,7 @@ export default class Input {
     private activeSquare: Square|undefined;
     private draggingPiece: DraggingPiece|undefined;
 
-    constructor(private shogui: ShoGUI) {
+    constructor(private shogui: ShoGUI, private config: Config) {
         let self = this;
 
         this.board = shogui.getBoard();
@@ -39,11 +39,6 @@ export default class Input {
 
         window.addEventListener('mousemove', function(e) {
             self.onMouseMove(e);
-            window.requestAnimationFrame( () => shogui.refreshCanvas() );
-        })
-
-        window.addEventListener('keydown', function(e) {
-            self.gui.flipBoard();
             window.requestAnimationFrame( () => shogui.refreshCanvas() );
         })
 
@@ -210,21 +205,31 @@ export default class Input {
         let mouseX = event.clientX - rect.left;
         let mouseY = event.clientY - rect.top;
         let clickedSq = this.gui.pos2Square(mouseX, mouseY);
+        let arrowStyle = 'blue';
+        if (this.config.arrowStyle) {
+            arrowStyle = this.config.arrowStyle;
+        }
+        if (this.config.altArrowStyle && event.altKey) {
+            arrowStyle = this.config.altArrowStyle;
+        }
+        if (this.config.ctrlArrowStyle && event.ctrlKey) {
+            arrowStyle = this.config.ctrlArrowStyle;
+        }
 
         if (clickedSq && !this.draggingPiece) {
-            this.currentArrow = { style: 'blue', size: 3.5, src: clickedSq, dest: clickedSq };
+            this.currentArrow = { style: arrowStyle, size: 3.5, src: clickedSq, dest: clickedSq };
         }
 
         for (let [key, value] of this.gui.getPlayerHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
-                this.currentArrow = { style: 'black', size: 3.5, src: {type: key, color: this.gui.getOrientation()} };
+                this.currentArrow = { style: arrowStyle, size: 3.5, src: {type: key, color: this.gui.getOrientation()} };
             }
         }
 
         for (let [key, value] of this.gui.getOpponentHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
-                this.currentArrow = { style: 'black', size: 3.5, src: {type: key, color: opponentColor} };
+                this.currentArrow = { style: arrowStyle, size: 3.5, src: {type: key, color: opponentColor} };
             }
         }
 

@@ -144,17 +144,17 @@ export class ShoGUI {
             this.gui.drawPiece(draggingPiece.piece, draggingPiece.x - this.gui.getSqSize()/2, draggingPiece.y - this.gui.getSqSize()/2);
         }
 
-        if (currentArrow) {
-           this.drawArrow(currentArrow);
-        }
-
         for ( let arrow of this.input.getUserArrows() ) { // Draw user input arrows
            this.drawArrow(arrow);
         }
 
         for ( let arrow of this.arrowList ) { // Draw programmatically-added arrows
             this.drawArrow(arrow);
-         }
+        }
+
+        if (currentArrow) {
+            this.drawArrow(currentArrow);
+        }
 
         this.gui.drawArrowCanvas(0.6);
     }

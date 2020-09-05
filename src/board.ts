@@ -1,4 +1,4 @@
-import { Piece, Piecetype, Square, Color, allSquares } from "./types";
+import { Piece, Piecetype, Square, Color, squares } from "./types";
 import { sfen2Piecetype, piece2sfen, validSfen } from "./util";
 
 export default class Board {
@@ -60,7 +60,7 @@ export default class Board {
                     if (!pType) {
                         throw new Error('Failed to retrieve Piecetype from SFEN for character: ' + char);
                     }
-                    this.addPiece({type: pType, color: color, promoted: isPromote}, allSquares[curSquareIndex]);
+                    this.addPiece({type: pType, color: color, promoted: isPromote}, squares[curSquareIndex]);
                     curSquareIndex++;
                 } else {
                     curSquareIndex = curSquareIndex + Number(char);
@@ -102,7 +102,7 @@ export default class Board {
         let sfen = '';
         let numEmptySpaces = 0;
 
-        for (let curSq of allSquares) {
+        for (let curSq of squares) {
             let piece = this.pieceList.get(curSq);
 
             if (piece) {
@@ -120,7 +120,7 @@ export default class Board {
                     sfen += numEmptySpaces.toString();
                 }
                 numEmptySpaces = 0;
-                if (curSq !== allSquares[allSquares.length - 1]) {
+                if (curSq !== squares[squares.length - 1]) {
                     sfen += '/';
                 }
             }

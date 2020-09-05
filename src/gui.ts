@@ -1,4 +1,4 @@
-import { Color, Piece, Piecetype, Rect, Square, allSquares, Arrow, Config } from "./types";
+import { Color, Piece, Piecetype, Rect, Square, squares, Arrow, Config } from "./types";
 import Board from "./board";
 
 export default class GUI {
@@ -348,7 +348,7 @@ export default class GUI {
         if (col < 0 || row < 0 || col > 9 - 1 || row > 9 - 1) {
             return undefined;
         }
-        return allSquares[ 9*row + col ];
+        return squares[ 9*row + col ];
     }
 
     public square2Pos(sq: Square) {

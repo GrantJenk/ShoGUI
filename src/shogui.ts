@@ -1,6 +1,6 @@
 import GUI from "./gui";
 import Board from "./board";
-import { Config, Piecetype, Square, allSquares, Color, Arrow, Highlight } from "./types";
+import { Config, Piecetype, Square, squares, Color, Arrow, Highlight } from "./types";
 import { arrowsEqual } from "./util";
 import Input from "./input";
 
@@ -128,7 +128,7 @@ export class ShoGUI {
         this.gui.drawBoard();
         this.gui.drawFileRankLabels();
 
-        for (let i of allSquares) {
+        for (let i of squares) {
             if (activeSquare && draggingPiece) { // Don't draw the currently dragging piece on its square
                 if (activeSquare === i) {
                     continue;

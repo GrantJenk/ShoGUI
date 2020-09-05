@@ -13,14 +13,14 @@ export default class GUI {
     private playerHandBounds: Map<Piecetype, Rect>;
     private opponentHandBounds: Map<Piecetype, Rect>;
 
-    constructor(private board: Board, private config: Config) {
+    constructor(private board: Board, container: HTMLElement, private config: Config) {
         this.orientation = 'black';
         if (config.orientation === 'white') {
             this.orientation = 'white';
         }
 
         this.canvas = document.createElement('canvas');
-        this.canvas.width = 1350;
+        this.canvas.width = container.clientWidth;
         this.canvas.height = this.canvas.width/2 + 20;
         let tmpCtx = this.canvas.getContext('2d');
         if (tmpCtx) {
@@ -70,7 +70,7 @@ export default class GUI {
         this.playerHandBounds = tmpHandRects.player;
         this.opponentHandBounds = tmpHandRects.opponent;
 
-        document.body.appendChild(this.canvas);
+        container.appendChild(this.canvas);
     }
 
     private initHandRectMaps(): { player: Map<Piecetype, Rect>, opponent: Map<Piecetype, Rect> } {

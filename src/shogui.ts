@@ -11,9 +11,9 @@ export class ShoGUI {
     private highlightList: Highlight[];
     private arrowList: Arrow[];
 
-    constructor(private config: Config) {
+    constructor(private container: HTMLElement, private config: Config) {
         this.board = new Board();
-        this.gui = new GUI(this.board, config);
+        this.gui = new GUI(this.board, container, config);
         this.input = new Input(this, config);
 
         this.highlightList = [];

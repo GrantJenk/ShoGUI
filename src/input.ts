@@ -27,20 +27,22 @@ export default class Input {
 
         this.arrows = [];
 
+        function mouseMoveHandler(e: MouseEvent) {
+            self.onMouseMove(e);
+            window.requestAnimationFrame( () => shogui.refreshCanvas() );
+        }
+
         this.gui.getCanvas().addEventListener('mousedown', function(e) {
             self.onMouseDown(e);
+            window.addEventListener('mousemove', mouseMoveHandler);
             window.requestAnimationFrame( () => shogui.refreshCanvas() );
         });
 
         window.addEventListener('mouseup', function(e) {
+            window.removeEventListener('mousemove', mouseMoveHandler);
             self.onMouseUp(e);
             window.requestAnimationFrame( () => shogui.refreshCanvas() );
         });
-
-        window.addEventListener('mousemove', function(e) {
-            self.onMouseMove(e);
-            window.requestAnimationFrame( () => shogui.refreshCanvas() );
-        })
 
         this.gui.getCanvas().addEventListener('contextmenu', function(e) {
             e.preventDefault();
@@ -86,6 +88,10 @@ export default class Input {
     }
 
     private onMouseDown(event: MouseEvent) {
+        if (this.currentArrow) {
+            this.currentArrow = undefined;
+        }
+        
         if (event.button === 2) {
             this.onRightClick(event);
             return;

@@ -12,9 +12,9 @@ export interface Config {
 export type Color = 'black' | 'white';
 export type Piecetype = 'king' | 'rook' | 'bishop'  | 'gold' | 'silver' | 'knight' | 'lance' | 'pawn';
 
-export const ranks: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
-export const files: number[] = [9, 8, 7, 6, 5, 4, 3, 2, 1];
-export const squares: string[] = Array.prototype.concat(...ranks.map(r => files.map(c => c+r)));
+export const ranks: readonly string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+export const files: readonly number[] = [9, 8, 7, 6, 5, 4, 3, 2, 1];
+export const squares: readonly string[] = Array.prototype.concat(...ranks.map(r => files.map(c => c+r)));
 
 export type Rank = typeof ranks[number];
 export type File = typeof files[number];

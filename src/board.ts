@@ -3,33 +3,29 @@ import { piece2sfen, validSfen, sfen2Piece } from "./util";
 
 export default class Board {
     private pieceList: Map<Square, Piece>;
-    private playerHands: Map<Color, Map<Piecetype, number> >;
+    private whiteHand: Map<Piecetype, number>;
+    private blackHand: Map<Piecetype, number>;
 
     constructor() {
         this.pieceList = new Map<Square, Piece>();
-        this.playerHands = new Map<Color, Map<Piecetype, number> >();
+        this.blackHand = new Map<Piecetype, number>();
+        this.whiteHand = new Map<Piecetype, number>();
 
-        let blackHand = new Map<Piecetype, number>();
-        let whiteHand = new Map<Piecetype, number>();
+        this.blackHand.set('pawn', 0);
+        this.blackHand.set('lance', 0);
+        this.blackHand.set('knight', 0);
+        this.blackHand.set('silver', 0);
+        this.blackHand.set('gold', 0);
+        this.blackHand.set('bishop', 0);
+        this.blackHand.set('rook', 0);
 
-        blackHand.set('pawn', 0);
-        blackHand.set('lance', 0);
-        blackHand.set('knight', 0);
-        blackHand.set('silver', 0);
-        blackHand.set('gold', 0);
-        blackHand.set('bishop', 0);
-        blackHand.set('rook', 0);
-
-        whiteHand.set('pawn', 0);
-        whiteHand.set('lance', 0);
-        whiteHand.set('knight', 0);
-        whiteHand.set('silver', 0);
-        whiteHand.set('gold', 0);
-        whiteHand.set('bishop', 0);
-        whiteHand.set('rook', 0);
-
-        this.playerHands.set('black', blackHand);
-        this.playerHands.set('white', whiteHand);
+        this.whiteHand.set('pawn', 0);
+        this.whiteHand.set('lance', 0);
+        this.whiteHand.set('knight', 0);
+        this.whiteHand.set('silver', 0);
+        this.whiteHand.set('gold', 0);
+        this.whiteHand.set('bishop', 0);
+        this.whiteHand.set('rook', 0);
     }
 
     /** 
@@ -156,7 +152,7 @@ export default class Board {
     }
 
     public add2Hand(color: Color, piecetype: Piecetype, num = 1) {
-        let hand = this.playerHands.get(color);
+        let hand = this.getHand(color);
         let curAmount = hand?.get(piecetype);
         if (curAmount !== undefined) {
             hand?.set(piecetype, curAmount + num);
@@ -166,7 +162,7 @@ export default class Board {
     }
 
     public removeFromHand(color: Color, piecetype: Piecetype, num = 1) {
-        let hand = this.playerHands.get(color);
+        let hand = this.getHand(color);
         let curAmount = hand?.get(piecetype);
         if (!curAmount || curAmount - num < 0) { 
             return false;
@@ -176,6 +172,15 @@ export default class Board {
     }
 
     public getNumPiecesInHand(color: Color, piecetype: Piecetype) {
-        return this.playerHands.get(color)?.get(piecetype);
+        return this.getHand(color)?.get(piecetype);
+    }
+
+    private getHand(color: Color): Map<Piecetype, number> | undefined {
+        if (color === 'black') {
+            return this.blackHand;
+        } else if (color === 'white') {
+            return this.whiteHand;
+        }
+        return undefined;
     }
 }

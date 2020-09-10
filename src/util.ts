@@ -1,4 +1,4 @@
-import { Rect, Piecetype, Arrow, Piece } from "./types";
+import { Rect, Piecetype, Arrow, Piece, Square, squares } from "./types";
 
 /**
  * Determines if something is inside the Rect
@@ -15,13 +15,11 @@ export function isPosInsideRect(rect: Rect, x: number, y: number) {
 }
 
 export function arrowsEqual(arrow1: Arrow, arrow2: Arrow): boolean {
-    if (typeof arrow1.src === 'string' && typeof arrow2.src === 'string') {
-        if (arrow1.src === arrow2.src && arrow1.dest === arrow2.dest) return true;
-    } else if (typeof arrow1.src !== 'string' && typeof arrow2.src !== 'string') {
-        if (arrow1.src.color === arrow2.src.color && arrow1.src.type === arrow2.src.type && arrow1.dest === arrow2.dest)
-            return true;
-    }
-    return false;
+    return (arrow1.src === arrow2.src && arrow1.dest === arrow2.dest);
+}
+
+export function isValidSquare(arg:any): arg is Square {
+    return squares.includes(arg) !== false;
 }
 
 // TOOD: Check hand substring of sfen

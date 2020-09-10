@@ -10,7 +10,8 @@ export interface Config {
 }
 
 export type Color = 'black' | 'white';
-export type Piecetype = 'king' | 'rook' | 'bishop'  | 'gold' | 'silver' | 'knight' | 'lance' | 'pawn';
+export type Piecetype = 'king' | 'rook' | 'bishop' | 'gold' | 'silver' | 'knight' | 'lance' | 'pawn';
+export type HandPiece = [Piecetype, Color];
 
 export const squares = [ '9a' , '8a' , '7a' , '6a' , '5a' , '4a' , '3a' , '2a' , '1a' ,
                          '9b' , '8b' , '7b' , '6b' , '5b' , '4b' , '3b' , '2b' , '1b' ,
@@ -30,10 +31,6 @@ export interface Piece {
     type: Piecetype,
     color: Color,
     promoted?: boolean
-}
-export interface HandPiece {
-    type: Piecetype,
-    color: Color,
 }
 export interface Rect {
     x: number,

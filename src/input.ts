@@ -228,14 +228,14 @@ export default class Input {
 
         for (let [key, value] of this.gui.getPlayerHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
-                this.currentArrow = { style: arrowStyle, size: 3.5, src: {type: key, color: this.gui.getOrientation()} };
+                this.currentArrow = { style: arrowStyle, size: 3.5, src: [key, this.gui.getOrientation()] };
             }
         }
 
         for (let [key, value] of this.gui.getOpponentHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
-                this.currentArrow = { style: arrowStyle, size: 3.5, src: {type: key, color: opponentColor} };
+                this.currentArrow = { style: arrowStyle, size: 3.5, src: [key, opponentColor] };
             }
         }
 

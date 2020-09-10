@@ -1,5 +1,6 @@
 import { Color, Piece, Piecetype, Rect, Square, squares, Arrow, Config } from "./types";
 import Board from "./board";
+import { isValidSquare } from "./util";
 
 export default class GUI {
     private orientation: Color;
@@ -292,7 +293,7 @@ export default class GUI {
     public drawSnapArrow(arrow: Arrow) {
         if (!arrow.dest) return false;
 
-        if (typeof arrow.src === 'string') { // Arrow is a SquareArrow
+        if (isValidSquare(arrow.src)) { // Beginning of arrow starts at a board square
             let fromSqPos = this.square2Pos(arrow.src);
 
             if (arrow.dest === arrow.src) { 
@@ -305,14 +306,15 @@ export default class GUI {
                 let toSqPos = this.square2Pos(arrow.dest);
                 this.drawArrow(arrow.style, arrow.size, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);
             }
-        } else { // Arrow is a HandArrow
+        } else { // Beginning of arrow starts at a hand piece
             let rect;
-            let handPiece = arrow.src;
-            if (handPiece.color === this.orientation) {
-                rect = this.playerHandBounds.get(handPiece.type);
+            let handPiecetype = arrow.src[0];
+            let handColor = arrow.src[1];
+            if (handColor === this.orientation) {
+                rect = this.playerHandBounds.get(handPiecetype);
             } else {
 
-                rect = this.opponentHandBounds.get(handPiece.type);
+                rect = this.opponentHandBounds.get(handPiecetype);
             }
             if (!rect) return false;
             let toSqPos = this.square2Pos(arrow.dest);

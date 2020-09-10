@@ -308,13 +308,12 @@ export default class GUI {
             }
         } else { // Beginning of arrow starts at a hand piece
             let rect;
-            let handPiecetype = arrow.src[0];
-            let handColor = arrow.src[1];
-            if (handColor === this.orientation) {
-                rect = this.playerHandBounds.get(handPiecetype);
+            let handPiece = arrow.src;
+            if (handPiece.color === this.orientation) {
+                rect = this.playerHandBounds.get(handPiece.type);
             } else {
 
-                rect = this.opponentHandBounds.get(handPiecetype);
+                rect = this.opponentHandBounds.get(handPiece.type);
             }
             if (!rect) return false;
             let toSqPos = this.square2Pos(arrow.dest);

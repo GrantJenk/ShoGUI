@@ -144,12 +144,12 @@ export class ShoGUI {
             this.gui.drawPiece(draggingPiece.piece, draggingPiece.x - this.gui.getSqSize()/2, draggingPiece.y - this.gui.getSqSize()/2);
         }
 
-        for ( let arrow of this.input.getUserArrows() ) { // Draw user input arrows
-           this.drawArrow(arrow);
-        }
-
         for ( let arrow of this.arrowList ) { // Draw programmatically-added arrows
             this.drawArrow(arrow);
+        }
+
+        for ( let arrow of this.input.getUserArrows() ) { // Draw user input arrows
+           this.drawArrow(arrow);
         }
 
         if (currentArrow) {

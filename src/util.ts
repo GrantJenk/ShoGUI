@@ -15,7 +15,7 @@ export function isPosInsideRect(rect: Rect, x: number, y: number) {
 }
 
 export function arrowsEqual(arrow1: Arrow, arrow2: Arrow): boolean {
-    if (arrow1.src === arrow2.src) return true;
+    if (arrow1.src === arrow2.src && arrow1.dest === arrow2.dest) return true;
     return false;
 }
 

@@ -41,7 +41,7 @@ export interface Rect {
 export interface Arrow {
     style: string;
     size: number,
-    src: Square|Piece,
+    src: Square|PieceCode,
     dest?: Square
 }
 export interface Highlight {

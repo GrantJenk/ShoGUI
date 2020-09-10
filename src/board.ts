@@ -52,6 +52,7 @@ export default class Board {
             for (let char of r) {
                 if ( isNaN(Number(char)) ) {
                     if (char === '+') {
+                        if (isPromote) throw new Error ('ERROR: Two "+" signs found in a row in sfen');
                         isPromote = true;
                         continue;
                     }
@@ -59,6 +60,7 @@ export default class Board {
                     if (!piece) {
                         throw new Error('Failed to retrieve piece from sfen for character: ' + char);
                     }
+                    if (isPromote) piece.promoted = true;
                     this.addPiece(piece, squares[curSquareIndex]);
                     curSquareIndex++;
                 } else {

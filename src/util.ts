@@ -1,4 +1,4 @@
-import { Rect, Piecetype, Arrow, Piece, Square, squares } from "./types";
+import { Rect, Arrow, Piece, Square, squares, Color, Piecetype } from "./types";
 
 /**
  * Determines if something is inside the Rect
@@ -15,7 +15,8 @@ export function isPosInsideRect(rect: Rect, x: number, y: number) {
 }
 
 export function arrowsEqual(arrow1: Arrow, arrow2: Arrow): boolean {
-    return (arrow1.src === arrow2.src && arrow1.dest === arrow2.dest);
+    if (arrow1.src === arrow2.src) return true;
+    return false;
 }
 
 export function isValidSquare(arg:any): arg is Square {
@@ -80,33 +81,40 @@ export function piece2sfen(piece: Piece): string {
     return result;
 }
 
-export function sfen2Piecetype(sfen: string): Piecetype|undefined {
-    switch (sfen.toUpperCase()) {
+export function sfen2Piece(sfen: string): Piece|undefined {
+    let pUpper = sfen.toUpperCase();
+    let result = { type: <Piecetype>'', color: <Color>''};
+
+    result.color = pUpper === sfen ? 'black' : 'white';
+
+    switch (pUpper) {
         case 'P':
-        case 'p':
-            return 'pawn';
+            result.type = 'pawn';
+            break;
         case 'L':
-        case 'l':
-            return 'lance';
+            result.type = 'lance';
+            break;
         case 'N':
-        case 'n':
-            return 'knight';
+            result.type = 'knight';
+            break;
         case 'S':
-        case 's':
-            return 'silver';
+            result.type = 'silver';
+            break;
         case 'G':
-        case 'g':
-            return 'gold';
+            result.type = 'gold';
+            break;
         case 'R':
-        case 'r':
-            return 'rook';
+            result.type = 'rook';
+            break;
         case 'B':
-        case 'b':
-            return 'bishop';
+            result.type = 'bishop';
+            break;
         case 'K':
-        case 'k':
-            return 'king';
+            result.type = 'king';
+            break;
         default:
             return undefined;
     }
+
+    return result;
 }

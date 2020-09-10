@@ -1,5 +1,5 @@
 import { Piece, Piecetype, Square, Color, squares } from "./types";
-import { sfen2Piecetype, piece2sfen, validSfen } from "./util";
+import { piece2sfen, validSfen, sfen2Piece } from "./util";
 
 export default class Board {
     private pieceList: Map<Square, Piece>;
@@ -55,12 +55,11 @@ export default class Board {
                         isPromote = true;
                         continue;
                     }
-                    let color: Color = char.toLowerCase() === char ? 'white' : 'black';
-                    let pType = sfen2Piecetype(char);
-                    if (!pType) {
-                        throw new Error('Failed to retrieve Piecetype from SFEN for character: ' + char);
+                    let piece = sfen2Piece(char);
+                    if (!piece) {
+                        throw new Error('Failed to retrieve piece from sfen for character: ' + char);
                     }
-                    this.addPiece({type: pType, color: color, promoted: isPromote}, squares[curSquareIndex]);
+                    this.addPiece(piece, squares[curSquareIndex]);
                     curSquareIndex++;
                 } else {
                     curSquareIndex = curSquareIndex + Number(char);
@@ -72,20 +71,16 @@ export default class Board {
         if (sfenHand) {
             let amt = 1;
             for (let char of sfenHand) {
-                let ptype = sfen2Piecetype(char);
+                let piece = sfen2Piece(char);
                 if ( !isNaN(Number(char)) ) {
                     amt = Number(char);
                     continue;
                 } else {
-                    if (!ptype) {
-                        throw new Error('ERROR: Cannot get piecetype from sfen character ' + char);
+                    if (!piece) {
+                        throw new Error('ERROR: Cannot get piece from sfen for character ' + char);
                     }
 
-                    if (char.toUpperCase() === char) {
-                        this.add2Hand('black', ptype, amt);
-                    } else if (char.toLowerCase() === char) {
-                        this.add2Hand('white', ptype, amt);
-                    }
+                    this.add2Hand(piece.color, piece.type, amt);
 
                     amt = 1;
                 }

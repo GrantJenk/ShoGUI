@@ -2,7 +2,7 @@ import { ShoGUI } from "./shogui";
 import Board from "./board";
 import GUI from "./gui";
 import { Config, Arrow, Square, Piece, Color, PieceCode } from "./types";
-import { isPosInsideRect, arrowsEqual, piece2sfen } from "./util";
+import { isPosInsideRect, arrowEndpointsEqual, piece2sfen } from "./util";
 
 interface DraggingPiece {
     piece: Piece,
@@ -71,16 +71,16 @@ export default class Input {
         this.arrows.push(arrow);
     }
 
-    private removeArrow(arrow: Arrow) {
+    private removeArrow(arrow: Arrow): Arrow|undefined {
         let i = 0;
         for (let cmpArrow of this.arrows) {
-            if ( arrowsEqual(cmpArrow, arrow) ) {
+            if ( arrowEndpointsEqual(cmpArrow, arrow) ) {
                 this.arrows.splice(i, 1);
-                return true;
+                return cmpArrow;
             }
             i++;
         }
-        return false;
+        return undefined;
     }
 
     private clearArrows() {
@@ -177,7 +177,8 @@ export default class Input {
 
         if (event.button === 2) { // Right mouse button
             if (this.currentArrow) {
-                if ( !this.removeArrow(this.currentArrow) ) {
+                let removedArrow = this.removeArrow(this.currentArrow);
+                if (!removedArrow || removedArrow.style !== this.currentArrow.style) {
                     this.currentArrow.size += 0.5;
                     this.addArrow(this.currentArrow);
                 }

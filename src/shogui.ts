@@ -1,7 +1,7 @@
 import GUI from "./gui";
 import Board from "./board";
 import { Config, Piecetype, Square, squares, Color, Arrow, Highlight } from "./types";
-import { arrowsEqual } from "./util";
+import { arrowEndpointsEqual } from "./util";
 import Input from "./input";
 
 export class ShoGUI {
@@ -74,7 +74,7 @@ export class ShoGUI {
     public removeArrow(arrow: Arrow): boolean {
         let i = 0;
         for (let cmpArrow of this.arrowList) {
-            if ( arrowsEqual(cmpArrow, arrow) ) {
+            if ( arrowEndpointsEqual(cmpArrow, arrow) ) {
                 this.arrowList.splice(i, 1);
                 return true;
             }

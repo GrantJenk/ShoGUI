@@ -228,10 +228,7 @@ export default class GUI {
                 break;
 
             case 'circle':
-                this.ctx.lineWidth = this.canvas.width/500;
-                this.ctx.beginPath();
-                this.ctx.arc(pos.centerX, pos.centerY, this.sqSize/2 - 4, 0, 2 * Math.PI);
-                this.ctx.stroke();
+                this.drawCircle(this.ctx, style, this.canvas.width/500, pos.centerX, pos.centerY, this.sqSize/2 - 4);
                 break;
 /*
             case 'dot':
@@ -245,6 +242,18 @@ export default class GUI {
         }
         this.ctx.restore();
         return true;
+    }
+
+    public drawCircle(ctx: CanvasRenderingContext2D, style: string, lineWidth: number, centerX: number, centerY: number, radius: number) {
+        ctx.save();
+
+        ctx.lineWidth = lineWidth;
+        ctx.strokeStyle = style;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2*Math.PI);
+        ctx.stroke();
+
+        ctx.restore();
     }
 
     public drawArrow(style: string, size: number, fromx: number, fromy: number, tox: number, toy: number) {
@@ -297,11 +306,7 @@ export default class GUI {
             let fromSqPos = this.square2Pos(arrow.src);
 
             if (arrow.dest === arrow.src) { 
-                this.arrowCtx.strokeStyle = arrow.style;
-                this.arrowCtx.lineWidth = arrow.size*this.canvas.width/1750;
-                this.arrowCtx.beginPath();
-                this.arrowCtx.arc(fromSqPos.centerX, fromSqPos.centerY, this.sqSize/2 - 4, 0, 2 * Math.PI);
-                this.arrowCtx.stroke();
+                this.drawCircle(this.arrowCtx, arrow.style, arrow.size*this.canvas.width/1750, fromSqPos.centerX, fromSqPos.centerY, this.sqSize/2 - 4);
             } else {
                 let toSqPos = this.square2Pos(arrow.dest);
                 this.drawArrow(arrow.style, arrow.size, fromSqPos.centerX, fromSqPos.centerY, toSqPos.centerX, toSqPos.centerY);

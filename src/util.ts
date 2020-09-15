@@ -58,7 +58,7 @@ export function validSfen(sfen: string): boolean {
     return true;
 }
 
-export function piece2sfen(piece: Piece): string {
+export function getPieceCode(piece: Piece): string {
     let result = '';
 
     // Get the sfen from piecetype
@@ -81,40 +81,21 @@ export function piece2sfen(piece: Piece): string {
     return result;
 }
 
-export function sfen2Piece(sfen: string): Piece|undefined {
-    let pUpper = sfen.toUpperCase();
-    let result = { type: <Piecetype>'', color: <Color>''};
+const piecetypeMap = new Map<string, Piecetype>();
+piecetypeMap.set('p', 'pawn');
+piecetypeMap.set('l', 'lance');
+piecetypeMap.set('n', 'knight');
+piecetypeMap.set('s', 'silver');
+piecetypeMap.set('g', 'gold');
+piecetypeMap.set('b', 'bishop');
+piecetypeMap.set('r', 'rook');
+piecetypeMap.set('k', 'king');
 
-    result.color = pUpper === sfen ? 'black' : 'white';
+export function getPieceObj(sfenPieceCode: string): Piece|undefined {
+    let pieceCode = sfenPieceCode.toLowerCase();
+    let pColor: Color = pieceCode === sfenPieceCode ? 'white' : 'black';
+    let pType = piecetypeMap.get(pieceCode);
+        if (!pType) return undefined;
 
-    switch (pUpper) {
-        case 'P':
-            result.type = 'pawn';
-            break;
-        case 'L':
-            result.type = 'lance';
-            break;
-        case 'N':
-            result.type = 'knight';
-            break;
-        case 'S':
-            result.type = 'silver';
-            break;
-        case 'G':
-            result.type = 'gold';
-            break;
-        case 'R':
-            result.type = 'rook';
-            break;
-        case 'B':
-            result.type = 'bishop';
-            break;
-        case 'K':
-            result.type = 'king';
-            break;
-        default:
-            return undefined;
-    }
-
-    return result;
+    return {type:pType, color: pColor};
 }

@@ -1,6 +1,6 @@
 import { Color, Piece, Piecetype, Rect, Square, squares, Arrow, Config } from "./types";
 import Board from "./board";
-import { isValidSquare, sfen2Piece } from "./util";
+import { isValidSquare } from "./util";
 
 export default class GUI {
     private orientation: Color;
@@ -313,7 +313,7 @@ export default class GUI {
             }
         } else { // Beginning of arrow starts at a hand piece
             let rect;
-            let handPiece = sfen2Piece(arrow.src);
+            let handPiece = arrow.src;
                 if (!handPiece) return false;
                 
             if (handPiece.color === this.orientation) {

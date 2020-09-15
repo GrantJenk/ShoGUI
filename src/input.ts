@@ -1,8 +1,8 @@
 import { ShoGUI } from "./shogui";
 import Board from "./board";
 import GUI from "./gui";
-import { Config, Arrow, Square, Piece, Color, PieceCode } from "./types";
-import { isPosInsideRect, arrowEndpointsEqual, piece2sfen } from "./util";
+import { Config, Arrow, Square, Piece, Color } from "./types";
+import { isPosInsideRect, arrowEndpointsEqual } from "./util";
 
 interface DraggingPiece {
     piece: Piece,
@@ -229,14 +229,14 @@ export default class Input {
 
         for (let [key, value] of this.gui.getPlayerHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
-                this.currentArrow = { style: arrowStyle, size: 3.5, src: <PieceCode>piece2sfen({type: key, color: this.gui.getOrientation()}) };
+                this.currentArrow = { style: arrowStyle, size: 3.5, src: {type: key, color: this.gui.getOrientation()} };
             }
         }
 
         for (let [key, value] of this.gui.getOpponentHandBounds()) {
             if (isPosInsideRect(value, mouseX, mouseY)) {
                 let opponentColor: Color = this.gui.getOrientation() === 'black' ? 'white' : 'black';
-                this.currentArrow = { style: arrowStyle, size: 3.5, src: <PieceCode>piece2sfen({type: key, color: opponentColor}) };
+                this.currentArrow = { style: arrowStyle, size: 3.5, src: {type: key, color: opponentColor} };
             }
         }
 

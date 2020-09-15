@@ -1,5 +1,5 @@
 import { Piece, Piecetype, Square, Color, squares } from "./types";
-import { piece2sfen, validSfen, sfen2Piece } from "./util";
+import { validSfen, getPieceCode, getPieceObj } from "./util";
 
 export default class Board {
     private pieceList: Map<Square, Piece>;
@@ -9,7 +9,6 @@ export default class Board {
     constructor() {
         this.pieceList = new Map<Square, Piece>();
         this.blackHand = new Map<Piecetype, number>();
-        this.whiteHand = new Map<Piecetype, number>();
 
         this.blackHand.set('pawn', 0);
         this.blackHand.set('lance', 0);
@@ -19,13 +18,7 @@ export default class Board {
         this.blackHand.set('bishop', 0);
         this.blackHand.set('rook', 0);
 
-        this.whiteHand.set('pawn', 0);
-        this.whiteHand.set('lance', 0);
-        this.whiteHand.set('knight', 0);
-        this.whiteHand.set('silver', 0);
-        this.whiteHand.set('gold', 0);
-        this.whiteHand.set('bishop', 0);
-        this.whiteHand.set('rook', 0);
+        this.whiteHand = new Map<Piecetype, number>(this.blackHand);
     }
 
     /** 
@@ -52,7 +45,7 @@ export default class Board {
                         isPromote = true;
                         continue;
                     }
-                    let piece = sfen2Piece(char);
+                    let piece = getPieceObj(char);
                     if (!piece) {
                         throw new Error('Failed to retrieve piece from sfen for character: ' + char);
                     }
@@ -69,7 +62,7 @@ export default class Board {
         if (sfenHand) {
             let amt = 1;
             for (let char of sfenHand) {
-                let piece = sfen2Piece(char);
+                let piece = getPieceObj(char);
                 if ( !isNaN(Number(char)) ) {
                     amt = Number(char);
                     continue;
@@ -102,7 +95,7 @@ export default class Board {
                 if (numEmptySpaces !== 0) {
                     sfen += numEmptySpaces.toString();
                 }
-                sfen += piece2sfen(piece);
+                sfen += getPieceCode(piece);
                 numEmptySpaces = 0;
             } else {
                 numEmptySpaces++;

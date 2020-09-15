@@ -12,8 +12,6 @@ export interface Config {
 export type Color = 'black' | 'white';
 export type Piecetype = 'king' | 'rook' | 'bishop' | 'gold' | 'silver' | 'knight' | 'lance' | 'pawn';
 export type HighlightType = 'fill' | 'outline' | 'circle' | 'hidden'
-export type PieceCode = 'K' | 'R' | 'B' | 'G' | 'S' | 'N' | 'L' | 'P' | // SFEN Piececodes (without the '+')
-                        'k' | 'r' | 'b' | 'g' | 's' | 'n' | 'l' | 'p';
 
 export const squares = [ '9a' , '8a' , '7a' , '6a' , '5a' , '4a' , '3a' , '2a' , '1a' ,
                          '9b' , '8b' , '7b' , '6b' , '5b' , '4b' , '3b' , '2b' , '1b' ,
@@ -26,6 +24,8 @@ export const squares = [ '9a' , '8a' , '7a' , '6a' , '5a' , '4a' , '3a' , '2a' ,
                          '9i' , '8i' , '7i' , '6i' , '5i' , '4i' , '3i' , '2i' , '1i' ] as const;
 
 export type Square = typeof squares[number];
+
+export type HandPiece = Omit<Piece, 'promoted'>;
 
 export interface Piece {
     type: Piecetype,
@@ -41,7 +41,7 @@ export interface Rect {
 export interface Arrow {
     style: string;
     size: number,
-    src: Square|PieceCode,
+    src: Square|HandPiece,
     dest?: Square
 }
 export interface Highlight {

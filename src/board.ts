@@ -1,5 +1,5 @@
-import { Piece, Piecetype, Square, Color, squares } from "./types";
-import { validSfen, getPieceCode, getPieceObj } from "./util";
+import { Piece, Piecetype, Square, Color, squares, Piececode } from "./types";
+import { validSfen, getPiececode, getPieceObj } from "./util";
 
 export default class Board {
     private pieceList: Map<Square, Piece>;
@@ -45,7 +45,7 @@ export default class Board {
                         isPromote = true;
                         continue;
                     }
-                    let piece = getPieceObj(char);
+                    let piece = getPieceObj(<Piececode>char);
                     if (!piece) {
                         throw new Error('Failed to retrieve piece from sfen for character: ' + char);
                     }
@@ -62,7 +62,7 @@ export default class Board {
         if (sfenHand) {
             let amt = 1;
             for (let char of sfenHand) {
-                let piece = getPieceObj(char);
+                let piece = getPieceObj(<Piececode>char);
                 if ( !isNaN(Number(char)) ) {
                     amt = Number(char);
                     continue;
@@ -95,7 +95,7 @@ export default class Board {
                 if (numEmptySpaces !== 0) {
                     sfen += numEmptySpaces.toString();
                 }
-                sfen += getPieceCode(piece);
+                sfen += getPiececode(piece);
                 numEmptySpaces = 0;
             } else {
                 numEmptySpaces++;

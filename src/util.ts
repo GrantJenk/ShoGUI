@@ -1,4 +1,14 @@
-import { Rect, Arrow, Piece, Square, squares, Color, Piecetype } from "./types";
+import { Rect, Arrow, Piece, Square, squares, Color, Piecetype, Piececode } from "./types";
+
+const piecetypeMap = new Map<Piececode, Piecetype>();
+piecetypeMap.set('P', 'pawn');
+piecetypeMap.set('L', 'lance');
+piecetypeMap.set('N', 'knight');
+piecetypeMap.set('S', 'silver');
+piecetypeMap.set('G', 'gold');
+piecetypeMap.set('B', 'bishop');
+piecetypeMap.set('R', 'rook');
+piecetypeMap.set('K', 'king');
 
 /**
  * Determines if something is inside the Rect
@@ -12,6 +22,10 @@ export function isPosInsideRect(rect: Rect, x: number, y: number) {
         return false;
     }
     return true;
+}
+
+export function oppositeColor(color: Color) {
+    return color === 'black' ? 'white' : 'black';
 }
 
 export function arrowEndpointsEqual(arrow1: Arrow, arrow2: Arrow): boolean {
@@ -58,7 +72,7 @@ export function validSfen(sfen: string): boolean {
     return true;
 }
 
-export function getPieceCode(piece: Piece): string {
+export function getPiececode(piece: Piece): Piececode {
     let result = '';
 
     // Get the sfen from piecetype
@@ -78,24 +92,15 @@ export function getPieceCode(piece: Piece): string {
         result = '+' + result;
     }
 
-    return result;
+    return <Piececode>result;
 }
 
-const piecetypeMap = new Map<string, Piecetype>();
-piecetypeMap.set('p', 'pawn');
-piecetypeMap.set('l', 'lance');
-piecetypeMap.set('n', 'knight');
-piecetypeMap.set('s', 'silver');
-piecetypeMap.set('g', 'gold');
-piecetypeMap.set('b', 'bishop');
-piecetypeMap.set('r', 'rook');
-piecetypeMap.set('k', 'king');
-
-export function getPieceObj(sfenPieceCode: string): Piece|undefined {
-    let pieceCode = sfenPieceCode.toLowerCase();
-    let pColor: Color = pieceCode === sfenPieceCode ? 'white' : 'black';
-    let pType = piecetypeMap.get(pieceCode);
+export function getPieceObj(pieceCode: Piececode): Piece|undefined {
+    let upper = pieceCode.toUpperCase();
+    let pPromoted = pieceCode[0] === '+' ? true : false;
+    let pColor: Color = pieceCode === upper ? 'black' : 'white';
+    let pType = piecetypeMap.get(<Piececode>upper);
         if (!pType) return undefined;
 
-    return {type:pType, color: pColor};
+    return { type:pType, color: pColor, promoted: pPromoted };
 }

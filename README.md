@@ -11,7 +11,7 @@ Heavily inspired by [LiChess' Chessground](https://github.com/ornicar/chessgroun
 - Written in TypeScript
 - Uses HTML Canvas
 - Custom user callback functions
-- Contains no game logic
+- Contains no game logic so variants can be compatible
 - Move pieces by clicking or drag&drop
 - Draw arrows
 - Highlight board squares

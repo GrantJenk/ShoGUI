@@ -59,7 +59,7 @@ export default class GUI {
 
         for (let [key, value] of this.imageMap) {
             value.src = '../media/pieces/' + key + '.png';
-            //value.src = 'https://raw.githubusercontent.com/gsj285/ShoGUI/master/media/pieces/' + key + '.png'
+            //value.src = 'https://raw.githubusercontent.com/GrantJenk/ShoGUI/master/media/pieces/' + key + '.png'
         }
 
         // Setup Rects
